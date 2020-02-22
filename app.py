@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask
 from flask_cors import CORS
 from flask_restx import Api, Resource, fields
@@ -9,6 +11,7 @@ CORS(
     app,
     resources={
         "/auth/": {"origins": ["http://localhost:8080"]},
+        "/queries/*": {"origins": ["http://localhost:8080"]},
     }
 )
 
@@ -35,11 +38,12 @@ todo = api.model('Todo', {
 
 
 @queries.route('/')
-class TodoList(Resource):
+class QueryList(Resource):
     @token_auth.login_required
     def get(self):
-        """List all tasks"""
-        return {"hoi": 1}
+        """Get all Queries Result"""
+        from word_analytics.word_analytics import generate_cluster
+        return {"results": [i.text for i in generate_cluster()]}
 
     @token_auth.login_required
     @queries.expect(todo)
