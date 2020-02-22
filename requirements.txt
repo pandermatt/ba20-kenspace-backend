@@ -2,3 +2,4 @@ werkzeug
 flask
 flask-restx
 flask-httpauth
+flask-cors

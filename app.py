@@ -1,9 +1,16 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_restx import Api, Resource, fields
 
 from api.auth import token_auth
 
 app = Flask(__name__)
+CORS(
+    app,
+    resources={
+        "/auth/": {"origins": ["http://localhost:8080"]},
+    }
+)
 
 authorizations = {
     'Bearer Auth': {
@@ -59,6 +66,17 @@ class Todo(Resource):
     @queries.expect(todo)
     def put(self, id):
         return api.payload
+
+
+auth = api.namespace('auth', description='Authentication')
+
+
+@auth.route('/')
+class AuthHandler(Resource):
+    @token_auth.login_required
+    def get(self):
+        """Check Authentication"""
+        return 'successful'
 
 
 if __name__ == '__main__':
