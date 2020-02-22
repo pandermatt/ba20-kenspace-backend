@@ -1,13 +1,14 @@
 from flask_httpauth import HTTPTokenAuth
 
 from api.errors import unauthorized_response
+from config import config
 
 token_auth = HTTPTokenAuth()
 
 
 @token_auth.verify_token
 def verify_token(token):
-    return token == "hallo"
+    return token == config.auth_key()
 
 
 @token_auth.error_handler

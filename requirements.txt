@@ -1,3 +1,4 @@
+PyYAML
 werkzeug
 flask
 flask-restx

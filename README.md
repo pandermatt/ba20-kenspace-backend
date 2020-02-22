@@ -23,6 +23,14 @@ pip install -r requirements.txt
 python app.py
 ```
 
+#### Configuration
+
+```bash
+cp application.example.yml application.yml
+```
+
+Fill in all your keys
+
 # Contributors
 ![](https://avatars2.githubusercontent.com/u/20790833?s=20) Pascal Andermatt
 
