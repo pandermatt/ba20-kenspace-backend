@@ -1,10 +1,9 @@
-import json
-
 from flask import Flask
 from flask_cors import CORS
-from flask_restx import Api, Resource, fields
+from flask_restx import Api, Resource
 
 from api.auth import token_auth
+from api.cache import generate_queries, generate_facet
 
 app = Flask(__name__)
 CORS(
@@ -12,6 +11,7 @@ CORS(
     resources={
         "/auth/": {"origins": ["http://localhost:8080"]},
         "/queries/*": {"origins": ["http://localhost:8080"]},
+        "/facet/*": {"origins": ["http://localhost:8080"]},
     }
 )
 
@@ -31,45 +31,24 @@ api = Api(app, version='0.0.1', title='KenSpace API',
 
 queries = api.namespace('queries', description='Query operations')
 
-todo = api.model('Todo', {
-    'id': fields.Integer(readOnly=True, description='The task unique identifier'),
-    'task': fields.String(required=True, description='The task details')
-})
-
 
 @queries.route('/')
 class QueryList(Resource):
     @token_auth.login_required
     def get(self):
         """Get all Queries Result"""
-        from word_analytics.word_analytics import generate_cluster
-        return {"results": [i.text for i in generate_cluster()]}
+        return generate_queries()
 
+
+facet = api.namespace('facet', description='Generate facet')
+
+
+@facet.route('/')
+class FacetList(Resource):
     @token_auth.login_required
-    @queries.expect(todo)
-    def post(self):
-        """Create a new task"""
-        return api.payload, 201
-
-
-@queries.route('/<int:id>')
-@queries.response(404, 'Todo not found')
-@queries.param('id', 'The task identifier')
-class Todo(Resource):
-    @token_auth.login_required
-    def get(self, id):
-        """Fetch a given resource"""
-        return {"id": id}
-
-    @token_auth.login_required
-    @queries.response(204, 'Todo deleted')
-    def delete(self, id):
-        return '', 204
-
-    @token_auth.login_required
-    @queries.expect(todo)
-    def put(self, id):
-        return api.payload
+    def get(self):
+        """Get all Facet"""
+        return generate_facet()
 
 
 auth = api.namespace('auth', description='Authentication')

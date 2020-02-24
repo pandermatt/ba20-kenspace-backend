@@ -1,37 +1,39 @@
+import pandas as pd
+
 from config import config
+from util.noun_extraction import extract_nouns
 from word_analytics.clustered_data_structure import ClusteredStructure
-from word_analytics.document_reader import DocumentReader
 from word_analytics.k_means_clusterer import KCluster
 
 
 def generate_cluster():
     path = config.data_file('imdb-f.csv')
-    doc_reader = DocumentReader(path)
-    data_list = doc_reader.rows  # titles, contents, story-plots
+    df = pd.read_csv(path)
 
-    k_cluster = KCluster(get_all_titles(data_list), 10, 10000)
+    all_titles = get_column(df, 'movie-title')
+    extracted_nouns = extract_nouns(df, 'movie-content')
 
-    return prepare_clustered_data_structure(get_all_titles(data_list), k_cluster)
+    print(len(all_titles))
+    print(len(extracted_nouns))
+
+    k_cluster = KCluster(extracted_nouns, 10, 10000)
+    return prepare_clustered_data_structure(all_titles, k_cluster)
 
 
-def get_all_titles(data_list):
-    titles = []
-    for i in range(len(data_list[:])):
-        titles.append(data_list[:][i][0])
-    return titles
+def get_column(df, col_name):
+    return df[col_name].tolist()
 
 
 def prepare_clustered_data_structure(text_list, k_cluster):
     structured_data = []
-    for i in range(len(text_list)):
-        text = text_list[i]
+    for text in text_list:
         prediction = k_cluster.make_prediction(text)
         structured_data.append(ClusteredStructure(text, cluster_data_as_text(prediction, k_cluster.terms)))
     return structured_data
 
 
-def cluster_data_as_text(cluster, terms):
+def cluster_data_as_text(cluster_list, terms):
     data = []
-    for i in range(len(cluster)):
-        data.append(terms[cluster[i]])
+    for cluster in cluster_list:
+        data.append(terms[cluster])
     return data
