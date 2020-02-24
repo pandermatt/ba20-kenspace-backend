@@ -12,7 +12,7 @@ class KCluster:
         self.data = data
         self.terms = None
         self.vectorizer = TfidfVectorizer()
-        self.cluster_count = int(len(data) / data_per_cluster) * 100
+        self.cluster_count = int(len(data) / data_per_cluster * 10)
 
         self.__set_k_mean_model(self.cluster_count,
                                 self.__vectorize_data())

@@ -9,14 +9,14 @@ from word_analytics.k_means_clusterer import KCluster
 def generate_cluster():
     path = config.data_file('imdb-f.csv')
     df = pd.read_csv(path)
+    df = df.fillna('')
 
     all_titles = get_column(df, 'movie-title')
-    extracted_nouns = extract_nouns(df, 'movie-content')
 
-    print(len(all_titles))
-    print(len(extracted_nouns))
+    result = [i + ' ' + j for i, j in zip(extract_nouns(df, 'movie-content'),
+                                          extract_nouns(df, 'story-line'))]
 
-    k_cluster = KCluster(extracted_nouns, 10, 10000)
+    k_cluster = KCluster(result, 10, 10000)
     return prepare_clustered_data_structure(all_titles, k_cluster)
 
 
