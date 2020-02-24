@@ -10,7 +10,7 @@ def extract_nouns(df, column_name):
 class NounExtraction:
     __set_up = False
 
-    @timed_cache(minutes=10)
+    @timed_cache(minutes=100)
     def get_continuous_chunks(self, text, chunk_func=nltk.ne_chunk):
         """
         Source: https://stackoverflow.com/a/49584275

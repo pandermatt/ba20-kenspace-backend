@@ -1,12 +1,14 @@
 import pandas as pd
 
 from config import config
+from util.logger import log
 from util.noun_extraction import extract_nouns
 from word_analytics.clustered_data_structure import ClusteredStructure
 from word_analytics.k_means_clusterer import KCluster
 
 
 def generate_cluster():
+    log.info("Generating Clusters")
     path = config.data_file('imdb-f.csv')
     df = pd.read_csv(path)
     df = df.fillna('')

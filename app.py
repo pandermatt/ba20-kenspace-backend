@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_restx import Api, Resource
 
 from api.auth import token_auth
-from api.cache import generate_queries, generate_facet
+from api.cached_response import generate_queries, generate_facet
 
 app = Flask(__name__)
 CORS(
@@ -63,4 +63,4 @@ class AuthHandler(Resource):
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(threaded=False, processes=3,debug=False)
