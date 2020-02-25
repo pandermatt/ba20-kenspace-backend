@@ -8,7 +8,7 @@ token_auth = HTTPTokenAuth()
 
 @token_auth.verify_token
 def verify_token(token):
-    return token == config.auth_key()
+    return token == config.get_env('AUTH_KEY')
 
 
 @token_auth.error_handler

@@ -2,7 +2,7 @@ import threading
 
 from util.logger import log
 from util.timed_cache import timed_cache
-from word_analytics.word_analytics import generate_cluster
+from cluster_analytics.word_analytics import generate_cluster
 
 cluster_generation_lock = threading.Lock()
 
@@ -10,7 +10,7 @@ cluster_generation_lock = threading.Lock()
 def start_thread():
     log.info('Starting request: {0}'.format(threading.active_count()))
     cluster_generation_lock.acquire()
-    log.info('Enter cluster generation')
+    log.info('Enter cluster generation: ID {0}'.format(threading.current_thread().ident))
     try:
         c = cached_cluster()
     finally:
@@ -18,12 +18,12 @@ def start_thread():
     return c
 
 
-@timed_cache(minutes=10)
+@timed_cache(minutes=100)
 def cached_cluster():
     return generate_cluster()
 
 
-@timed_cache(minutes=1)
+@timed_cache(minutes=10)
 def generate_queries():
     return {"results":
         [{
@@ -33,7 +33,7 @@ def generate_queries():
     }
 
 
-@timed_cache(minutes=1)
+@timed_cache(minutes=10)
 def generate_facet():
     words = {}
     for curr in start_thread():

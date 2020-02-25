@@ -1,4 +1,4 @@
-from word_analytics.word_analytics import generate_cluster
+from cluster_analytics.word_analytics import generate_cluster
 
 if __name__ == '__main__':
     s_data = generate_cluster()

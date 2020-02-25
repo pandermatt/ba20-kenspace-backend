@@ -24,8 +24,8 @@ class Config:
     def data_file(self, file_name):
         return join(self.__data_dir(), file_name)
 
-    def auth_key(self):
-        return self.__get_var('AUTH_KEY')
+    def get_env(self, var):
+        return self.__get_var(var)
 
     def __get_var(self, var):
         if not self.__config_file:
