@@ -8,6 +8,7 @@ from util.logger import log
 
 
 def clean_up_text(df, column_name):
+    log.info('Starting Text Cleanup')
     start_time = time.time()
     with mp.Pool() as pool:
         result = pool.map(TextCleaner().strip, df[column_name])

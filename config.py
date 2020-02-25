@@ -13,6 +13,14 @@ def get_or_create(dir_path):
     return dir_path
 
 
+def initialize_data():
+    """Specifies which DataHandler to use"""
+    # from file_import.imdb_data_handler import ImdbDataHandler
+    # return ImdbDataHandler()
+    from file_import.email_data_handler import EmailDataHandler
+    return EmailDataHandler()
+
+
 class Config:
     __root_dir = dirname(abspath(__file__))
     __application_config_path = join(__root_dir, 'application.yml')

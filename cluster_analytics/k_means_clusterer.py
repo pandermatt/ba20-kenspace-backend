@@ -2,10 +2,12 @@ from sklearn import cluster
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 from config import config
+from util.logger import log
 
 
 class KCluster:
     def __init__(self, data, data_per_cluster, max_iteration):
+        log.info('Starting KMeans Clustering')
         self.data_per_cluster = data_per_cluster
         self.max_iteration = max_iteration
         self.model = None
