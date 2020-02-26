@@ -4,6 +4,7 @@ from flask_restx import Api, Resource
 
 from api.auth import token_auth
 from api.cached_response import generate_queries, generate_facet
+from config import config
 
 app = Flask(__name__)
 CORS(
@@ -63,4 +64,4 @@ class AuthHandler(Resource):
 
 
 if __name__ == '__main__':
-    app.run(threaded=False, processes=3, debug=False)
+    app.run(threaded=False, processes=config.get_env("PROCESSES_NUMBER"), debug=False)
