@@ -1,8 +1,8 @@
-scikit-learn
-PyYAML
-werkzeug
 flask
-flask-restx
-flask-httpauth
 flask-cors
+flask-httpauth
+flask-restx
 nltk
+PyYAML
+scikit-learn
+werkzeug
