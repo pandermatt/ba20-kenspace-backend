@@ -10,6 +10,9 @@ from util.logger import log
 def clean_up_text(df, column_name):
     log.info('Starting Text Cleanup')
     TextCleaner().set_up_nltk()
+    if config.get_env("PROCESSES_NUMBER") < 2:
+        # non multiprocessing OS
+        return df[column_name].apply(lambda x: TextCleaner().strip(x)).tolist()
     start_time = time.time()
     with mp.Pool() as pool:
         result = pool.map(TextCleaner().strip, df[column_name])
