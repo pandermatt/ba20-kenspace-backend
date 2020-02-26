@@ -9,6 +9,7 @@ from util.logger import log
 
 def clean_up_text(df, column_name):
     log.info('Starting Text Cleanup')
+    TextCleaner().set_up_nltk()
     start_time = time.time()
     with mp.Pool() as pool:
         result = pool.map(TextCleaner().strip, df[column_name])
@@ -38,7 +39,7 @@ class TextCleaner:
 
         return tag_dict.get(tag, nltk.wordnet.NOUN)
 
-    def __set_up_nltk(self):
+    def set_up_nltk(self):
         if not self.__set_up:
             return
         self.__set_up = True
