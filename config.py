@@ -19,10 +19,10 @@ def initialize_data():
     """
     Specifies which DataHandler to use
     """
-    from data_import.imdb_data_handler import ImdbDataHandler
-    return ImdbDataHandler()
-    # from data_import.email_data_handler import EmailDataHandler
-    # return EmailDataHandler()
+    # from data_import.imdb_data_handler import ImdbDataHandler
+    # return ImdbDataHandler()
+    from data_import.email_data_handler import EmailDataHandler
+    return EmailDataHandler()
 
 
 class Config:

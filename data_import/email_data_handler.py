@@ -7,6 +7,7 @@ from config import config
 from data_import.data_handler import DataHandler
 from util.logger import log
 from util.text_clean_up import clean_up_text
+from util.timed_cache import timed_cache
 
 
 class EmailDataHandler(DataHandler):
@@ -15,12 +16,12 @@ class EmailDataHandler(DataHandler):
 
     def __init__(self):
         DataHandler.__init__(self, 'Email')
-        mail_data_dir = config.input_data_file('mail-data-allice')
-        mail_to_analyze = 'sent'
+        mail_data_dir = config.input_data_file('mail-data')
+        mail_to_analyze = 'inbox'
         mail_to_analyze_path = os.path.join(mail_data_dir, mail_to_analyze)
 
         rows = []
-        for mail_file in glob.glob(os.path.join(mail_to_analyze_path, '*.txt')):
+        for mail_file in glob.glob(os.path.join(mail_to_analyze_path, '*.')):
             with open(mail_file) as fp:
                 row = [''] * len(self.__columns)
                 content_line = False
@@ -53,8 +54,15 @@ class EmailDataHandler(DataHandler):
     def display_labels(self):
         return self.df['Subject'].tolist()
 
+    @timed_cache(minutes=30)
+    def __cached_cleanup(self, col):
+        return clean_up_text(self.df, col)
+
+    def content_labels(self):
+        return self.__cached_cleanup('combined')
+
     def item_to_cluster(self):
-        return clean_up_text(self.df, 'combined')
+        return self.__cached_cleanup('combined')
 
 
 if __name__ == '__main__':

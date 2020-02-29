@@ -10,12 +10,18 @@ class KMeansCluster:
         self.data = data
         self.data_per_cluster = data_per_cluster
         self.max_iteration = max_iteration
+
+        self.vectorizer = None
+        self.model = None
+        self.centroids_ordered = None
+        self.features = None
+
         self.calculate()
 
     def calculate(self, stopwords=None):
-        self.vectorizer = TfidfVectorizer(max_df=0.8, stop_words=stopwords)
+        self.vectorizer = TfidfVectorizer(max_df=0.8, stop_words=stopwords, max_features=10000)
 
-        cluster_count = int(len(self.data) / self.data_per_cluster * 10)
+        cluster_count = int(len(self.data) / self.data_per_cluster * 3)
         data = self.vectorizer.fit_transform(self.data)
         self.model = cluster.KMeans(n_clusters=cluster_count, init='k-means++', max_iter=self.max_iteration, n_init=1)
         self.model.fit(data)
