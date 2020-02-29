@@ -1,4 +1,4 @@
-from werkzeug.exceptions import BadRequest, Unauthorized
+from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 
 
 def error_response(message=None):
@@ -9,3 +9,7 @@ def error_response(message=None):
 
 def unauthorized_response():
     raise Unauthorized()
+
+
+def not_found_response():
+    raise NotFound()

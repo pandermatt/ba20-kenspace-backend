@@ -4,6 +4,7 @@ from os.path import dirname, abspath, join, exists
 import yaml
 
 from util.logger import log
+from util.timed_cache import timed_cache
 
 
 def get_or_create(dir_path):
@@ -13,12 +14,15 @@ def get_or_create(dir_path):
     return dir_path
 
 
+@timed_cache(minutes=100)
 def initialize_data():
-    """Specifies which DataHandler to use"""
-    # from file_import.imdb_data_handler import ImdbDataHandler
-    # return ImdbDataHandler()
-    from file_import.email_data_handler import EmailDataHandler
-    return EmailDataHandler()
+    """
+    Specifies which DataHandler to use
+    """
+    from data_import.imdb_data_handler import ImdbDataHandler
+    return ImdbDataHandler()
+    # from data_import.email_data_handler import EmailDataHandler
+    # return EmailDataHandler()
 
 
 class Config:
@@ -29,8 +33,17 @@ class Config:
     def __data_dir(self):
         return get_or_create(abspath(join(self.__root_dir, 'data')))
 
-    def data_file(self, file_name):
-        return join(self.__data_dir(), file_name)
+    def input_data_dir(self):
+        return get_or_create(join(self.__data_dir(), 'input'))
+
+    def input_data_file(self, file_name):
+        return join(self.input_data_dir(), file_name)
+
+    def model_data_dir(self):
+        return get_or_create(join(self.__data_dir(), 'model'))
+
+    def model_data_file(self, file_name):
+        return join(self.model_data_dir(), file_name)
 
     def get_env(self, var):
         return self.__get_var(var)

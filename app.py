@@ -1,9 +1,11 @@
-from flask import Flask
-from flask_cors import CORS
-from flask_restx import Api, Resource
+import json
 
+from flask import Flask, request
+from flask_cors import CORS
+from flask_restx import Api, Resource, fields
+
+from api import cached_response
 from api.auth import token_auth
-from api.cached_response import generate_queries, generate_facet
 from config import config
 
 app = Flask(__name__)
@@ -32,13 +34,20 @@ api = Api(app, version='0.0.1', title='KenSpace API',
 
 queries = api.namespace('queries', description='Query operations')
 
+uuid = api.model('UUID', {
+    'uuid': fields.String(readOnly=True, description='unique identifier'),
+})
+
 
 @queries.route('/')
 class QueryList(Resource):
     @token_auth.login_required
     def get(self):
         """Get all Queries Result"""
-        return generate_queries()
+        return cached_response.generate_queries(
+            request.args.get('uuid'),
+            request.args.get('deletedWords')
+        )
 
 
 facet = api.namespace('facet', description='Generate facet')
@@ -49,7 +58,9 @@ class FacetList(Resource):
     @token_auth.login_required
     def get(self):
         """Get all Facet"""
-        return generate_facet()
+        return cached_response.generate_facet(
+            request.args.get('uuid')
+        )
 
 
 auth = api.namespace('auth', description='Authentication')

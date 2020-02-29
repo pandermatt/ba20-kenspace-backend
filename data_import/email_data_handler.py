@@ -4,7 +4,7 @@ import os
 import pandas as pd
 
 from config import config
-from file_import.data_handler import DataHandler
+from data_import.data_handler import DataHandler
 from util.logger import log
 from util.text_clean_up import clean_up_text
 
@@ -15,12 +15,12 @@ class EmailDataHandler(DataHandler):
 
     def __init__(self):
         DataHandler.__init__(self, 'Email')
-        mail_data_dir = config.data_file('mail-data')
-        mail_to_analyze = 'inbox'
+        mail_data_dir = config.input_data_file('mail-data-allice')
+        mail_to_analyze = 'sent'
         mail_to_analyze_path = os.path.join(mail_data_dir, mail_to_analyze)
 
         rows = []
-        for mail_file in glob.glob(os.path.join(mail_to_analyze_path, '*.')):
+        for mail_file in glob.glob(os.path.join(mail_to_analyze_path, '*.txt')):
             with open(mail_file) as fp:
                 row = [''] * len(self.__columns)
                 content_line = False

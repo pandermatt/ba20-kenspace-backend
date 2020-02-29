@@ -1,14 +1,14 @@
 import pandas as pd
 
 from config import config
-from file_import.data_handler import DataHandler
+from data_import.data_handler import DataHandler
 from util.text_clean_up import clean_up_text
 
 
 class ImdbDataHandler(DataHandler):
     def __init__(self):
         DataHandler.__init__(self, 'IMDB')
-        path = config.data_file('imdb-f.csv')
+        path = config.input_data_file('imdb-f.csv')
         df = pd.read_csv(path)
         self.df = df.fillna('')
         pass

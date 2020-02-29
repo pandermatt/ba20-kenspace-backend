@@ -4,7 +4,7 @@ from util.logger import log
 class DataHandler:
     def __init__(self, name):
         self.name = name
-        log.info(f'Loading {name} Data')
+        log.info(f'{name} Data Loaded')
 
     def display_labels(self):
         pass
