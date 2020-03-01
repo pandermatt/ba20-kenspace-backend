@@ -25,4 +25,4 @@ class ImdbDataHandler(DataHandler):
                                             self.__cached_cleanup('story-line'))]
 
     def item_to_cluster(self):
-        return self.__cached_cleanup('movie-content') * 4 + self.__cached_cleanup('story-line')
+        return self.__cached_cleanup('movie-content') + self.__cached_cleanup('story-line') * 4

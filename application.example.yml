@@ -1,3 +1,4 @@
 DATA_LANGUAGE: "english"
 AUTH_KEY: <YOUR-KEY>
 PROCESSES_NUMBER: <NUMBER>
+DATA: "Imdb" # Imdb, Email, WhatsApp
