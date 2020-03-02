@@ -39,22 +39,7 @@ def generate_queries(uuid, stopwords):
         "uuid": uuid,
         "results": [{
             "text": cluster.text,
+            "content": cluster.content,
             "data": cluster.cluster
         } for cluster in result]
     }
-
-
-def generate_facet(uuid):
-    if uuid is "":
-        _, result = start_cluster_generation_thread()
-    else:
-        _, result = cluster_handler.load_cluster(uuid)
-
-    words = {}
-    for curr in result:
-        for i in curr.cluster:
-            if i in words:
-                words[i] = words[i] + 1
-            else:
-                words[i] = 1
-    return {"results": sorted(words.items(), key=lambda kv: kv[1], reverse=True)}

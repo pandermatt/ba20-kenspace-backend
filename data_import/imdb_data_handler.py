@@ -14,7 +14,8 @@ class ImdbDataHandler(DataHandler):
         self.df = df.fillna('')
 
     def display_labels(self):
-        return self.df['movie-title'].tolist()
+        return [[subject, content] for subject, content in
+                zip(self.df['movie-title'].tolist(), self.df['story-line'].tolist())]
 
     @timed_cache(minutes=30)
     def __cached_cleanup(self, col):

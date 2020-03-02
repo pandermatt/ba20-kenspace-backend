@@ -50,16 +50,6 @@ class QueryList(Resource):
         )
 
 
-@facet.route('/')
-class FacetList(Resource):
-    @token_auth.login_required
-    def get(self):
-        """Get all Facet"""
-        return cached_response.generate_facet(
-            escape(request.args.get('uuid'))
-        )
-
-
 @auth.route('/')
 class AuthHandler(Resource):
     @token_auth.login_required
