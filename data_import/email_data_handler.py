@@ -48,7 +48,8 @@ class EmailDataHandler(DataHandler):
                 rows.append(row + [content])
 
         df = pd.DataFrame(rows, columns=self.__columns + ['Content'])
-        df['combined'] = df['From'].astype(str) + ' ' + df['To'] + '_' + df['Cc'] + '_' + df['Subject']
+        df['combined'] = df['From'].astype(str) + ' ' + df['To'] + ' ' + \
+                         df['Cc'] + ' ' + df['Subject'] + ' ' + df['Content']
         self.df = df.fillna('')
 
     def display_labels(self):
