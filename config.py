@@ -3,6 +3,7 @@ from os.path import dirname, abspath, join, exists
 
 import yaml
 
+from data_import.data_handler import DataHandler
 from util.logger import log
 from util.timed_cache import timed_cache
 
@@ -15,7 +16,7 @@ def get_or_create(dir_path):
 
 
 @timed_cache(minutes=100)
-def initialize_data():
+def initialize_data() -> DataHandler:
     """
     Specifies which DataHandler to use
     """

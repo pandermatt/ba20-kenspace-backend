@@ -30,7 +30,7 @@ def cached_cluster() -> Tuple[str, List[ClusteredStructure]]:
 
 
 def generate_queries(uuid, stopwords):
-    if uuid is None:
+    if uuid is "":
         uuid, result = start_cluster_generation_thread()
     else:
         uuid, result = cluster_handler.load_cluster(uuid,stopwords)
@@ -45,7 +45,7 @@ def generate_queries(uuid, stopwords):
 
 
 def generate_facet(uuid):
-    if uuid is None:
+    if uuid is "":
         _, result = start_cluster_generation_thread()
     else:
         _, result = cluster_handler.load_cluster(uuid)
