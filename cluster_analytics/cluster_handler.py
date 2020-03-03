@@ -23,14 +23,14 @@ def generate_cluster() -> Tuple[str, List[ClusteredStructure]]:
     log.info(f"Generating Prediction (UUID: {uuid})")
     return (
         uuid,
-        prepare_clustered_data_structure(
-            data_handler.display_labels(), k_cluster.get_terms_as_text()
-        ),
+        prepare_clustered_data_structure(data_handler.display_labels(),
+                                         k_cluster.get_terms_as_text()),
     )
 
 
 @timed_cache(minutes=100)
-def load_cluster(uuid: str, stopwords: str) -> Tuple[str, List[ClusteredStructure]]:
+def load_cluster(uuid: str,
+                 stopwords: str) -> Tuple[str, List[ClusteredStructure]]:
     data_handler = initialize_data()
 
     k_cluster = ml_model_io.load_model_from_disk(uuid)
@@ -41,11 +41,13 @@ def load_cluster(uuid: str, stopwords: str) -> Tuple[str, List[ClusteredStructur
 
     return (
         uuid,
-        prepare_clustered_data_structure(
-            data_handler.display_labels(), k_cluster.get_terms_as_text()
-        ),
+        prepare_clustered_data_structure(data_handler.display_labels(),
+                                         k_cluster.get_terms_as_text()),
     )
 
 
-def prepare_clustered_data_structure(labels, terms) -> List[ClusteredStructure]:
-    return [ClusteredStructure(label, term) for label, term in zip(labels, terms)]
+def prepare_clustered_data_structure(labels,
+                                     terms) -> List[ClusteredStructure]:
+    return [
+        ClusteredStructure(label, term) for label, term in zip(labels, terms)
+    ]

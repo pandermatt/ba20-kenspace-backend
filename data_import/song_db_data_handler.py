@@ -16,22 +16,13 @@ class SongDbDataHandler(DataHandler):
         self.df = self.df.fillna("")
 
     def display_labels(self):
-        return [
-            [subject, content]
-            for subject, content in zip(
-                (
-                    "Rank "
-                    + self.df["Rank"].astype(str)
-                    + ". (Year "
-                    + self.df["Year"].astype(str)
-                    + '): "'
-                    + self.df["Song"].str.capitalize()
-                    + '" - '
-                    + self.df["Artist"].str.capitalize()
-                ).tolist(),
-                self.df["Lyrics"].tolist(),
-            )
-        ]
+        return [[subject, content] for subject, content in zip(
+            ("Rank " + self.df["Rank"].astype(str) + ". (Year " +
+             self.df["Year"].astype(str) + '): "' +
+             self.df["Song"].str.capitalize() + '" - ' +
+             self.df["Artist"].str.capitalize()).tolist(),
+            self.df["Lyrics"].tolist(),
+        )]
 
     @timed_cache(minutes=30)
     def __cached_cleanup(self, col):
@@ -39,8 +30,6 @@ class SongDbDataHandler(DataHandler):
 
     def item_to_cluster(self):
         return [
-            i + " " + j
-            for i, j in zip(
-                self.__cached_cleanup("Song"), self.__cached_cleanup("Lyrics")
-            )
+            i + " " + j for i, j in zip(self.__cached_cleanup("Song"),
+                                        self.__cached_cleanup("Lyrics"))
         ]

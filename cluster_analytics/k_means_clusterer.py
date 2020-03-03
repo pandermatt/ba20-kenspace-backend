@@ -39,7 +39,8 @@ class KMeansCluster:
         order_centroids = self.model.cluster_centers_.argsort()[:, ::-1]
         terms = self.vectorizer.get_feature_names()
 
-        prediction_list = order_centroids[int(index), : self.top_terms_per_cluster]
+        prediction_list = order_centroids[int(index), :self.
+                                          top_terms_per_cluster]
         return [terms[prediction] for prediction in prediction_list]
 
     def print_clusters(self):
@@ -48,7 +49,7 @@ class KMeansCluster:
         terms = self.vectorizer.get_feature_names()
         for i in range(self.model.n_clusters):
             print("Cluster %d:" % i),
-            for ind in order_centroids[i, : self.top_terms_per_cluster]:
+            for ind in order_centroids[i, :self.top_terms_per_cluster]:
                 print(" %s" % terms[ind])
             print()
 
@@ -60,15 +61,14 @@ class KMeansCluster:
         for idx, doc in enumerate(self.documents):
             feature_index = self.tfidf_matrix[idx, :].nonzero()[1]
             tfidf_scores = zip(
-                feature_index, [self.tfidf_matrix[idx, x] for x in feature_index]
-            )
-            sorted_scores = sorted(tfidf_scores, key=lambda x: x[1], reverse=True)
+                feature_index,
+                [self.tfidf_matrix[idx, x] for x in feature_index])
+            sorted_scores = sorted(tfidf_scores,
+                                   key=lambda x: x[1],
+                                   reverse=True)
             doc_terms = [
-                w
-                for w, s in [
-                    (terms[i], s)
-                    for (i, s) in sorted_scores[: self.top_terms_per_cluster]
-                ]
+                w for w, s in [(terms[i], s) for (
+                    i, s) in sorted_scores[:self.top_terms_per_cluster]]
             ]
             terms_list.append(doc_terms)
 

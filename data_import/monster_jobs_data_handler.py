@@ -22,8 +22,7 @@ class MonsterDataHandler(DataHandler):
 
     def item_to_cluster(self):
         return [
-            i + " " + j
-            for i, j in zip(
+            i + " " + j for i, j in zip(
                 self.__cached_cleanup("job-subtitle"),
                 self.__cached_cleanup("job-content"),
             )

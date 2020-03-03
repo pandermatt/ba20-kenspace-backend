@@ -36,8 +36,8 @@ class EmailDataHandler(DataHandler):
                             for col in self.__columns:
                                 if line.startswith(col):
                                     row[self.__columns.index(col)] = (
-                                        line.strip().replace(":", "").replace(col, "")
-                                    )
+                                        line.strip().replace(":", "").replace(
+                                            col, ""))
                                     continue
 
                             if line.startswith(self.__last_line):
@@ -50,26 +50,13 @@ class EmailDataHandler(DataHandler):
                 rows.append(row + [content])
 
         df = pd.DataFrame(rows, columns=self.__columns + ["Content"])
-        df["combined"] = (
-            df["From"].astype(str)
-            + " "
-            + df["To"]
-            + " "
-            + df["Cc"]
-            + " "
-            + df["Subject"]
-            + " "
-            + df["Content"]
-        )
+        df["combined"] = (df["From"].astype(str) + " " + df["To"] + " " +
+                          df["Cc"] + " " + df["Subject"] + " " + df["Content"])
         self.df = df.fillna("")
 
     def display_labels(self):
-        return [
-            [subject, content]
-            for subject, content in zip(
-                self.df["Subject"].tolist(), self.df["Content"].tolist()
-            )
-        ]
+        return [[subject, content] for subject, content in zip(
+            self.df["Subject"].tolist(), self.df["Content"].tolist())]
 
     @timed_cache(minutes=30)
     def __cached_cleanup(self, col):
