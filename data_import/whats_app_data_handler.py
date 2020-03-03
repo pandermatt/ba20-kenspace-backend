@@ -38,9 +38,6 @@ class WhatsAppDataHandler(DataHandler):
     def __cached_cleanup(self, col):
         return clean_up_text(self.df, col)
 
-    def content_labels(self):
-        return self.__cached_cleanup('Content')
-
     def item_to_cluster(self):
         return self.__cached_cleanup('combined')
 

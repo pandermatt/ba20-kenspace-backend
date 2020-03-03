@@ -20,9 +20,6 @@ class MonsterDataHandler(DataHandler):
     def __cached_cleanup(self, col):
         return clean_up_text(self.df, col)
 
-    def content_labels(self):
+    def item_to_cluster(self):
         return [i + ' ' + j for i, j in zip(self.__cached_cleanup('job-subtitle'),
                                             self.__cached_cleanup('job-content'))]
-
-    def item_to_cluster(self):
-        return self.__cached_cleanup('job-subtitle') + self.__cached_cleanup('job-content') * 4
