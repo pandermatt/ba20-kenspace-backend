@@ -27,31 +27,33 @@ def initialize_data() -> DataHandler:
     from data_import.monster_jobs_data_handler import MonsterDataHandler
     from data_import.song_db_data_handler import SongDbDataHandler
 
-    data_handler = {'Imdb': ImdbDataHandler,
-                    'Email': EmailDataHandler,
-                    'WhatsApp': WhatsAppDataHandler,
-                    'Recipe': RecipeDataHandler,
-                    'Monster': MonsterDataHandler,
-                    'SongDb': SongDbDataHandler}
+    data_handler = {
+        "Imdb": ImdbDataHandler,
+        "Email": EmailDataHandler,
+        "WhatsApp": WhatsAppDataHandler,
+        "Recipe": RecipeDataHandler,
+        "Monster": MonsterDataHandler,
+        "SongDb": SongDbDataHandler,
+    }
     return data_handler[config.get_env("DATA")]()
 
 
 class Config:
     __root_dir = dirname(abspath(__file__))
-    __application_config_path = join(__root_dir, 'application.yml')
+    __application_config_path = join(__root_dir, "application.yml")
     __config_file = None
 
     def __data_dir(self):
-        return get_or_create(abspath(join(self.__root_dir, 'data')))
+        return get_or_create(abspath(join(self.__root_dir, "data")))
 
     def input_data_dir(self):
-        return get_or_create(join(self.__data_dir(), 'input'))
+        return get_or_create(join(self.__data_dir(), "input"))
 
     def input_data_file(self, file_name):
         return join(self.input_data_dir(), file_name)
 
     def model_data_dir(self):
-        return get_or_create(join(self.__data_dir(), 'model'))
+        return get_or_create(join(self.__data_dir(), "model"))
 
     def model_data_file(self, file_name):
         return join(self.model_data_dir(), file_name)
@@ -62,7 +64,7 @@ class Config:
     def __get_var(self, var):
         if not self.__config_file:
             try:
-                with open(self.__application_config_path, 'r') as stream:
+                with open(self.__application_config_path, "r") as stream:
                     self.__config_file = yaml.safe_load(stream)
                     log.info("Config Loaded")
             except FileNotFoundError:
@@ -71,7 +73,7 @@ class Config:
         try:
             return os.environ.get(var) or self.__config_file[var]
         except KeyError:
-            log.error('Can not find ENV var: %s' % var)
+            log.error("Can not find ENV var: %s" % var)
 
 
 config = Config()
