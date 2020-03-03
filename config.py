@@ -1,5 +1,8 @@
 import os
-from os.path import dirname, abspath, join, exists
+from os.path import abspath
+from os.path import dirname
+from os.path import exists
+from os.path import join
 
 import yaml
 
