@@ -35,7 +35,8 @@ class EmailDataHandler(DataHandler):
                         else:
                             for col in self.__columns:
                                 if line.startswith(col):
-                                    row[self.__columns.index(col)] = line.strip().replace(':', '').replace(col, '')
+                                    row[self.__columns.index(col)] = line.strip().replace(
+                                        ':', '').replace(col, '')
                                     continue
 
                             if line.startswith(self.__last_line):
@@ -49,7 +50,7 @@ class EmailDataHandler(DataHandler):
 
         df = pd.DataFrame(rows, columns=self.__columns + ['Content'])
         df['combined'] = df['From'].astype(str) + ' ' + df['To'] + ' ' + \
-                         df['Cc'] + ' ' + df['Subject'] + ' ' + df['Content']
+            df['Cc'] + ' ' + df['Subject'] + ' ' + df['Content']
         self.df = df.fillna('')
 
     def display_labels(self):
