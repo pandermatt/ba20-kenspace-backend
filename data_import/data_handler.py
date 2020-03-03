@@ -7,9 +7,6 @@ class DataHandler:
         log.info(f'{name} Data Loaded')
 
     def display_labels(self):
-        return self.content_labels()
-
-    def content_labels(self):
         pass
 
     def item_to_cluster(self):

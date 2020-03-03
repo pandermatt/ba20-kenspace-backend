@@ -25,14 +25,14 @@ def initialize_data() -> DataHandler:
     from data_import.whats_app_data_handler import WhatsAppDataHandler
     from data_import.recipe_data_handler import RecipeDataHandler
     from data_import.monster_jobs_data_handler import MonsterDataHandler
-    from data_import.yt_videos_data_handler import YouTubeVideosDataHandler
+    from data_import.song_db_data_handler import SongDbDataHandler
 
     data_handler = {'Imdb': ImdbDataHandler,
                     'Email': EmailDataHandler,
                     'WhatsApp': WhatsAppDataHandler,
                     'Recipe': RecipeDataHandler,
                     'Monster': MonsterDataHandler,
-                    'YTVideos': YouTubeVideosDataHandler}
+                    'SongDb': SongDbDataHandler}
     return data_handler[config.get_env("DATA")]()
 
 
