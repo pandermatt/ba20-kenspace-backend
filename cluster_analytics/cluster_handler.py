@@ -13,7 +13,7 @@ def generate_cluster() -> Tuple[str, List[ClusteredStructure]]:
     data_handler = initialize_data()
 
     log.info(f'Generating KMeans Cluster')
-    k_cluster = KMeansCluster(data_handler.item_to_cluster(), 10, 10000)
+    k_cluster = KMeansCluster(data_handler.item_to_cluster(), 15, 10000)
     uuid = k_cluster.uuid
     log.info(f'KMeans Clustering (UUID: {uuid}) Loaded')
 

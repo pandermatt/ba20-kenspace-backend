@@ -53,8 +53,7 @@ class EmailDataHandler(DataHandler):
         self.df = df.fillna('')
 
     def display_labels(self):
-        return [[subject, content] for subject, content in
-                zip(self.df['Subject'].tolist(), self.df['Content'].tolist())]
+        return self.df['Subject'].tolist()
 
     @timed_cache(minutes=30)
     def __cached_cleanup(self, col):
