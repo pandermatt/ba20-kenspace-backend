@@ -1,5 +1,6 @@
 import json
-from typing import List, Tuple
+from typing import List
+from typing import Tuple
 
 from cluster_analytics.k_means_clusterer import KMeansCluster
 from config import initialize_data
