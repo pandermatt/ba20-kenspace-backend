@@ -40,6 +40,7 @@ def generate_queries(uuid, stopwords):
         "results": [{
             "text": cluster.text,
             "content": cluster.content,
-            "data": cluster.cluster
+            "cluster_id": cluster.cluster_id,
+            "data": cluster.terms
         } for cluster in result]
     }

@@ -15,12 +15,11 @@ class DataHandler:
 
     def calculate_n_clusters(self):
         """
-        map function: map document size to n_clusters
+        map function: maps document size to n_clusters
         """
         document_size = self.df.shape[0]
         upper_limit = 20
-        result = ((17 * document_size) + 29800)/9990
+        result = ((17 * document_size) + 29800) / 9990
         if result >= upper_limit:
             result = 20
-        return round(document_size/result)
-
+        return round(document_size / result)

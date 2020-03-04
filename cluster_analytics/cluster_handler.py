@@ -9,18 +9,21 @@ from util.logger import log
 from util.timed_cache import timed_cache
 
 
-def generate_cluster() -> Tuple[str, List[ClusteredStructure]]:
+def generate_cluster(top_terms_per_cluster=15, max_iteration=10000) -> Tuple[str, List[ClusteredStructure]]:
     data_handler = initialize_data()
 
     log.info(f'Generating KMeans Cluster')
-    k_cluster = KMeansCluster(data_handler.item_to_cluster(), 15, 10000)
+    k_cluster = KMeansCluster(data_handler.item_to_cluster(),
+                              data_handler.calculate_n_clusters(),
+                              top_terms_per_cluster,
+                              max_iteration)
     uuid = k_cluster.uuid
     log.info(f'KMeans Clustering (UUID: {uuid}) Loaded')
 
     ml_model_io.save_model_to_disk(k_cluster)
 
     log.info(f'Generating Prediction (UUID: {uuid})')
-    return uuid, prepare_clustered_data_structure(data_handler.display_labels(), k_cluster.get_terms_as_text())
+    return uuid, prepare_clustered_data_structure(data_handler.display_labels(), k_cluster.get_terms_and_cluster_id())
 
 
 @timed_cache(minutes=100)
@@ -33,8 +36,8 @@ def load_cluster(uuid: str, stopwords: str) -> Tuple[str, List[ClusteredStructur
         log.info(f'KMeans with Stopwords {json.loads(stopwords)}')
         k_cluster.calculate(json.loads(stopwords))
 
-    return uuid, prepare_clustered_data_structure(data_handler.display_labels(), k_cluster.get_terms_as_text())
+    return uuid, prepare_clustered_data_structure(data_handler.display_labels(), k_cluster.get_terms_and_cluster_id())
 
 
-def prepare_clustered_data_structure(labels, terms) -> List[ClusteredStructure]:
-    return [ClusteredStructure(label, term) for label, term in zip(labels, terms)]
+def prepare_clustered_data_structure(labels, terms_and_cluster_id) -> List[ClusteredStructure]:
+    return [ClusteredStructure(label, term[0], term[1]) for label, term in zip(labels, terms_and_cluster_id)]

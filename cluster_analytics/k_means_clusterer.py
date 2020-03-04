@@ -7,9 +7,10 @@ from config import config
 
 
 class KMeansCluster:
-    def __init__(self, documents, top_terms_per_cluster, max_iteration):
+    def __init__(self, documents, n_clusters, top_terms_per_cluster, max_iteration):
         self.uuid = str(uuid.uuid4())
         self.documents = documents
+        self.n_clusters = n_clusters
         self.top_terms_per_cluster = top_terms_per_cluster
         self.max_iteration = max_iteration
 
@@ -23,7 +24,7 @@ class KMeansCluster:
         self.vectorizer = TfidfVectorizer(stop_words=stopwords, max_df=0.8)
         self.tfidf_matrix = self.vectorizer.fit_transform(self.documents)
 
-        self.model = KMeans(n_clusters=int(len(self.documents) / 5), init='k-means++', max_iter=self.max_iteration,
+        self.model = KMeans(n_clusters=self.n_clusters, init='k-means++', max_iter=self.max_iteration,
                             n_init=1,
                             n_jobs=config.get_env("PROCESSES_NUMBER"))
         self.model.fit(self.tfidf_matrix)
@@ -48,7 +49,7 @@ class KMeansCluster:
                 print(' %s' % terms[ind])
             print()
 
-    def get_terms_as_text(self):
+    def get_terms_and_cluster_id(self):
         terms = self.vectorizer.get_feature_names()
 
         terms_list = []
@@ -60,5 +61,4 @@ class KMeansCluster:
             doc_terms = [w for w, s in [(terms[i], s) for (i, s) in sorted_scores[:self.top_terms_per_cluster]]]
             terms_list.append(doc_terms)
 
-        # Todo: Print Cluster ID (j) to a new array
-        return [x + [str(j)] for x, j in zip(terms_list, self.model.labels_)]
+        return [(x, str(j)) for x, j in zip(terms_list, self.model.labels_)]
