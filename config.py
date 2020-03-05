@@ -3,7 +3,6 @@ from os.path import dirname, abspath, join, exists
 
 import yaml
 
-from data_import.data_handler import DataHandler
 from util.logger import log
 from util.timed_cache import timed_cache
 
@@ -13,28 +12,6 @@ def get_or_create(dir_path):
         os.makedirs(dir_path)
         log.info("Creating: " + dir_path)
     return dir_path
-
-
-@timed_cache(minutes=100)
-def initialize_data() -> DataHandler:
-    """
-    Specifies which DataHandler to use
-    """
-    from data_import.imdb_data_handler import ImdbDataHandler
-    from data_import.email_data_handler import EmailDataHandler
-    from data_import.whats_app_data_handler import WhatsAppDataHandler
-    from data_import.recipe_data_handler import RecipeDataHandler
-    from data_import.monster_jobs_data_handler import MonsterDataHandler
-    from data_import.song_db_data_handler import SongDbDataHandler
-
-    data_handler = {'Imdb': ImdbDataHandler,
-                    'Email': EmailDataHandler,
-                    'WhatsApp': WhatsAppDataHandler,
-                    'Recipe': RecipeDataHandler,
-                    'Monster': MonsterDataHandler,
-                    'SongDb': SongDbDataHandler}
-    return data_handler[config.get_env("DATA")]()
-
 
 class Config:
     __root_dir = dirname(abspath(__file__))

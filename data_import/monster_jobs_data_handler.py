@@ -12,6 +12,7 @@ class MonsterDataHandler(DataHandler):
         path = config.input_data_file('monster-jobs2.csv')
         df = pd.read_csv(path)
         self.df = df.fillna('')
+        self.TOP_TERMS_PER_CLUSTER = 100
 
     def display_labels(self):
         return self.df['job-title'].tolist()

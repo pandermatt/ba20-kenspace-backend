@@ -10,9 +10,9 @@ class SongDbDataHandler(DataHandler):
     def __init__(self):
         DataHandler.__init__(self, 'Song DB')
         path = config.input_data_file('billboard_lyrics_1964-2015.csv')
-        df = pd.read_csv(path)
-        self.df = df[df['Rank'] <= 50]
-        self.df = self.df[self.df['Year'] >= 2005]
+        self.df = pd.read_csv(path)
+        # self.df = self.df[df['Rank'] <= 1]
+        self.df = self.df[self.df['Year'] >= 2000]
         self.df = self.df.fillna('')
 
     def display_labels(self):

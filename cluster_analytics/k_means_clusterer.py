@@ -49,7 +49,7 @@ class KMeansCluster:
                 print(' %s' % terms[ind])
             print()
 
-    def get_terms_and_cluster_id(self):
+    def get_terms(self):
         terms = self.vectorizer.get_feature_names()
 
         terms_list = []
@@ -61,4 +61,7 @@ class KMeansCluster:
             doc_terms = [w for w, s in [(terms[i], s) for (i, s) in sorted_scores[:self.top_terms_per_cluster]]]
             terms_list.append(doc_terms)
 
-        return [(x, str(j)) for x, j in zip(terms_list, self.model.labels_)]
+        return terms_list
+
+    def get_cluster_id(self):
+        return self.model.labels_
