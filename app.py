@@ -59,4 +59,4 @@ class AuthHandler(Resource):
 
 
 if __name__ == '__main__':
-    app.run(threaded=False, processes=config.get_env("PROCESSES_NUMBER"), debug=False)
+    app.run(threaded=False, processes=config.get_env("PROCESSES_NUMBER"), debug=False, host='0.0.0.0')

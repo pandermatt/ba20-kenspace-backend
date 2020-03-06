@@ -31,6 +31,22 @@ cp application.example.yml application.yml
 
 Fill in all your keys
 
+## Docker
+
+Use the `Makefile`:
+
+* `make build` builds the docker container
+* `make run` runs the Flask App
+
+### Clean up docker
+- List all containers (only IDs) `docker ps -aq`
+- Stop all running containers `docker stop $(docker ps -aq)`
+
+**WARNING:** this will delete all your docker images
+- Remove all containers `docker rm $(docker ps -aq)`
+- Remove all images `docker rmi $(docker images -q)`
+
+
 # Contributors
 ![](https://avatars2.githubusercontent.com/u/20790833?s=20) Pascal Andermatt
 

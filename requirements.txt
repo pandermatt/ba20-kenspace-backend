@@ -1,9 +1,10 @@
-joblib
 flask
 flask-cors
 flask-httpauth
 flask-restx
+joblib
 nltk
+pandas
 PyYAML
 scikit-learn
-werkzeug
+werkzeug==0.16.1
