@@ -20,3 +20,6 @@ build-nc: ## Build the container without caching
 
 run: ## Run container
 	docker run --rm -p=5000:5000 --name="$(APP_NAME)" $(APP_NAME)
+
+run-server: ## Run container on Server in Backend
+	docker run -d -p=5000:5000 --name="$(APP_NAME)" $(APP_NAME)
