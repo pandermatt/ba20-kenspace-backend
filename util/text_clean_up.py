@@ -43,7 +43,7 @@ class TextCleaner:
         return tag_dict.get(tag, nltk.wordnet.NOUN)
 
     def set_up_nltk(self):
-        if not self.__set_up:
+        if self.__set_up:
             return
         self.__set_up = True
 
