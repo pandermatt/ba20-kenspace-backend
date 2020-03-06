@@ -1,3 +1,5 @@
+import traceback
+
 from flask import Flask, request
 from flask_cors import CORS
 from flask_restx import Api, Resource, fields
@@ -6,6 +8,7 @@ from werkzeug.utils import escape
 from api import cached_response
 from api.auth import token_auth
 from config import config
+from util.logger import log
 
 app = Flask(__name__)
 CORS(
@@ -54,6 +57,20 @@ class AuthHandler(Resource):
     def get(self):
         """Check Authentication"""
         return 'successful'
+
+
+@app.after_request
+def after_request(response):
+    log.info('%s %s %s %s %s', request.remote_addr, request.method, request.scheme, request.full_path, response.status)
+    return response
+
+
+@app.errorhandler(Exception)
+def exceptions(e):
+    tb = traceback.format_exc()
+    log.error('%s %s %s %s 5xx INTERNAL SERVER ERROR\n%s', request.remote_addr, request.method, request.scheme,
+              request.full_path, tb)
+    return e.status_code
 
 
 if __name__ == '__main__':
