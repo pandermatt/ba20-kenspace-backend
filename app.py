@@ -13,7 +13,6 @@ CORS(
     resources={
         "/auth/": {"origins": ["http://localhost:8080", "http://pandermatt.ch"]},
         "/queries/*": {"origins": ["http://localhost:8080", "http://pandermatt.ch"]},
-        "/facet/*": {"origins": ["http://localhost:8080", "http://pandermatt.ch"]},
     }
 )
 authorizations = {
@@ -31,7 +30,6 @@ api = Api(app, version='0.0.1', title='KenSpace API',
           )
 
 queries = api.namespace('queries', description='Query operations')
-facet = api.namespace('facet', description='Generate facet')
 auth = api.namespace('auth', description='Authentication')
 
 uuid = api.model('UUID', {
