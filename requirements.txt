@@ -8,3 +8,4 @@ pandas
 PyYAML
 scikit-learn
 werkzeug==0.16.1
+waitress

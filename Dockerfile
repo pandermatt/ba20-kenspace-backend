@@ -15,7 +15,7 @@ COPY . /app
 
 ENTRYPOINT [ "python" ]
 
-CMD [ "app.py" ]
+CMD [ "waitress_server.py" ]
 
 ENV PORT 5000
 EXPOSE 5000
