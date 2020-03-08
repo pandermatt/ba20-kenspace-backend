@@ -47,9 +47,9 @@ class TextCleaner:
             return
         self.__set_up = True
 
-        nltk.download('punkt')
-        nltk.download('averaged_perceptron_tagger')
-        nltk.download('maxent_ne_chunker')
-        nltk.download('words')
-        nltk.download('wordnet')
-        nltk.download('stopwords')
+        nltk.download('punkt', quiet=True)
+        nltk.download('averaged_perceptron_tagger', quiet=True)
+        nltk.download('maxent_ne_chunker', quiet=True)
+        nltk.download('words', quiet=True)
+        nltk.download('wordnet', quiet=True)
+        nltk.download('stopwords', quiet=True)
