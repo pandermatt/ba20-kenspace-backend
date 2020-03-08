@@ -1,3 +1,11 @@
 flask
-flask-restx
+flask-cors
 flask-httpauth
+flask-restx
+joblib
+nltk
+pandas
+PyYAML
+scikit-learn
+werkzeug==0.16.1
+waitress

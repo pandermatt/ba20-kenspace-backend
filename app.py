@@ -1,10 +1,23 @@
-from flask import Flask
-from flask_restx import Api, Resource, fields
+import traceback
 
+from flask import Flask, request
+from flask_cors import CORS
+from flask_restx import Api, Resource, fields
+from werkzeug.utils import escape
+
+from api import cached_response
 from api.auth import token_auth
+from config import config
+from util.logger import log
 
 app = Flask(__name__)
-
+CORS(
+    app,
+    resources={
+        "/auth/": {"origins": ["http://localhost:8080", "http://pandermatt.ch"]},
+        "/queries/*": {"origins": ["http://localhost:8080", "http://pandermatt.ch"]},
+    }
+)
 authorizations = {
     'Bearer Auth': {
         'type': 'apiKey',
@@ -20,46 +33,45 @@ api = Api(app, version='0.0.1', title='KenSpace API',
           )
 
 queries = api.namespace('queries', description='Query operations')
+auth = api.namespace('auth', description='Authentication')
 
-todo = api.model('Todo', {
-    'id': fields.Integer(readOnly=True, description='The task unique identifier'),
-    'task': fields.String(required=True, description='The task details')
+uuid = api.model('UUID', {
+    'uuid': fields.String(readOnly=True, description='unique identifier'),
 })
 
 
 @queries.route('/')
-class TodoList(Resource):
+class QueryList(Resource):
     @token_auth.login_required
     def get(self):
-        """List all tasks"""
-        return {"hoi": 1}
+        """Get all Queries Result"""
+        return cached_response.generate_queries(
+            escape(request.args.get('uuid')),
+            request.args.get('deletedWords')
+        )
 
+
+@auth.route('/')
+class AuthHandler(Resource):
     @token_auth.login_required
-    @queries.expect(todo)
-    def post(self):
-        """Create a new task"""
-        return api.payload, 201
+    def get(self):
+        """Check Authentication"""
+        return 'successful'
 
 
-@queries.route('/<int:id>')
-@queries.response(404, 'Todo not found')
-@queries.param('id', 'The task identifier')
-class Todo(Resource):
-    @token_auth.login_required
-    def get(self, id):
-        """Fetch a given resource"""
-        return {"id": id}
+@app.after_request
+def after_request(response):
+    log.info('%s %s %s %s %s', request.remote_addr, request.method, request.scheme, request.full_path, response.status)
+    return response
 
-    @token_auth.login_required
-    @queries.response(204, 'Todo deleted')
-    def delete(self, id):
-        return '', 204
 
-    @token_auth.login_required
-    @queries.expect(todo)
-    def put(self, id):
-        return api.payload
+@app.errorhandler(Exception)
+def exceptions(e):
+    tb = traceback.format_exc()
+    log.error('%s %s %s %s 5xx INTERNAL SERVER ERROR\n%s', request.remote_addr, request.method, request.scheme,
+              request.full_path, tb)
+    return e.status_code
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(threaded=False, processes=config.get_env("PROCESSES_NUMBER"), debug=False)
