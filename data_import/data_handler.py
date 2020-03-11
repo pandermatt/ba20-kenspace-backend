@@ -1,5 +1,6 @@
-from util.logger import log
 from config import config
+from util.logger import log
+from util.text_clean_up import clean_up_text
 
 
 class DataHandler:
@@ -9,12 +10,16 @@ class DataHandler:
         self.name = name
         log.info(f'{name} Data Loaded')
         self.df = None
+        self.saved_item_to_cluster = None
 
     def display_labels(self):
         pass
 
     def item_to_cluster(self):
-        pass
+        return self.saved_item_to_cluster
+
+    def clean_up_df_text(self, col):
+        return clean_up_text(self.df, col)
 
     def calculate_n_clusters(self):
         """
