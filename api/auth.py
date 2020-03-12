@@ -8,7 +8,11 @@ token_auth = HTTPTokenAuth()
 
 @token_auth.verify_token
 def verify_token(token):
-    return token == config.get_env('AUTH_KEY')
+    try:
+        # todo is this secure?
+        return token in config.get_env('AUTH_KEY')
+    except RuntimeError:
+        token_auth_error()
 
 
 @token_auth.error_handler
