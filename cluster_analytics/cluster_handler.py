@@ -5,14 +5,14 @@ from typing import List, Tuple
 
 from cluster_analytics.k_means_clusterer import KMeansCluster
 from data_import.data_handler_factory import initialize_data
-from file_io import ml_model_io
+from file_io import storage_io
 from models.clustered_data_structure import ClusteredStructure
 from util.logger import log
 from util.timed_cache import timed_cache
 
 
-def generate_cluster(max_iteration=10000) -> Tuple[str, List[ClusteredStructure]]:
-    data_handler = initialize_data()
+def generate_cluster(selected_data, max_iteration=10000) -> Tuple[str, List[ClusteredStructure]]:
+    data_handler = initialize_data(selected_data)
 
     log.info(f'Generating KMeans Cluster')
     k_cluster = KMeansCluster(data_handler.item_to_cluster(),
@@ -22,7 +22,7 @@ def generate_cluster(max_iteration=10000) -> Tuple[str, List[ClusteredStructure]
     uuid = k_cluster.uuid
     log.info(f'KMeans Clustering (UUID: {uuid}) Loaded')
 
-    ml_model_io.save_model_to_disk(k_cluster)
+    storage_io.save_model_to_disk(k_cluster, selected_data)
 
     log.info(f'Generating Prediction (UUID: {uuid})')
 
@@ -31,10 +31,10 @@ def generate_cluster(max_iteration=10000) -> Tuple[str, List[ClusteredStructure]
 
 
 @timed_cache(minutes=100)
-def load_cluster(uuid: str, stopwords: str) -> Tuple[str, List[ClusteredStructure]]:
-    data_handler = initialize_data()
+def load_cluster(uuid: str, stopwords: str, selected_data: str) -> Tuple[str, List[ClusteredStructure]]:
+    data_handler = initialize_data(selected_data)
 
-    k_cluster = ml_model_io.load_model_from_disk(uuid)
+    k_cluster = storage_io.load_model_from_disk(uuid, selected_data)
 
     if stopwords:
         log.info(f'KMeans with Stopwords {json.loads(stopwords)}')
@@ -45,11 +45,11 @@ def load_cluster(uuid: str, stopwords: str) -> Tuple[str, List[ClusteredStructur
 
 
 def prepare_clustered_data_structure(labels, terms, cluster_ids) -> List[ClusteredStructure]:
-    return [ClusteredStructure(label, term, str(cluster_id)) for label, term, cluster_id in zip(labels, terms, cluster_ids)]
+    return [ClusteredStructure(label, term, str(cluster_id)) for label, term, cluster_id in
+            zip(labels, terms, cluster_ids)]
 
 
 def remove_rare_terms(cluster_word_list):
     flatten_list = list(itertools.chain.from_iterable(cluster_word_list))
     filter_terms = [key for key, val in Counter(flatten_list).items() if val == 1]
     return [[k for k in cluster_word if k not in filter_terms] for cluster_word in cluster_word_list]
-

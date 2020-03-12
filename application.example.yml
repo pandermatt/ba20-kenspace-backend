@@ -1,7 +1,9 @@
 DATA_LANGUAGE: "english"
-AUTH_KEY: <YOUR-KEY>
+AUTH_KEY:
+  - "<YOUR-KEY>:SongDb"
+  - "<YOUR-KEY>:Imdb"
+  - "<YOUR-KEY>:Email"
 PROCESSES_NUMBER: <NUMBER>
 DEFAULT_TOP_TERMS_PER_CLUSTER: 25
 N_CLUSTERS_UPPER_LIMIT: 20
-DATA: "Imdb" # Imdb, Email, WhatsApp, Recipe, Monster, SongDb
 PRODUCTION: Y

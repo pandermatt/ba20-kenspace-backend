@@ -1,6 +1,6 @@
 import traceback
 
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_restx import Api, Resource, fields
 from werkzeug.utils import escape
@@ -52,7 +52,8 @@ class QueryList(Resource):
         """Get all Queries Result"""
         return cached_response.generate_queries(
             escape(request.args.get('uuid')),
-            request.args.get('deletedWords')
+            request.args.get('deletedWords'),
+            request.headers.get('Authorization')
         )
 
 
@@ -76,6 +77,11 @@ def exceptions(e):
     log.error('%s %s %s %s 5xx INTERNAL SERVER ERROR\n%s', request.remote_addr, request.method, request.scheme,
               request.full_path, tb)
     return e.status_code
+
+
+@app.errorhandler(404)
+def resource_not_found(e):
+    return jsonify(error=str(e)), 404
 
 
 if __name__ == '__main__':

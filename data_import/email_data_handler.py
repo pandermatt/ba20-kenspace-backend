@@ -51,16 +51,10 @@ class EmailDataHandler(DataHandler):
         df['combined'] = df['From'].astype(str) + ' ' + df['To'] + ' ' + \
                          df['Cc'] + ' ' + df['Subject'] + ' ' + df['Content']
         self.df = df.fillna('')
+        self.saved_item_to_cluster = self.clean_up_df_text('combined')
 
     def display_labels(self):
         return self.df['Subject'].tolist()
-
-    @timed_cache(minutes=30)
-    def __cached_cleanup(self, col):
-        return clean_up_text(self.df, col)
-
-    def item_to_cluster(self):
-        return self.__cached_cleanup('combined')
 
 
 if __name__ == '__main__':

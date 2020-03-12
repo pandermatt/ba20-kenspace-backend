@@ -12,15 +12,10 @@ class ImdbDataHandler(DataHandler):
         path = config.input_data_file('imdb-f.csv')
         df = pd.read_csv(path)
         self.df = df.fillna('')
+        self.saved_item_to_cluster = [i + ' ' + j for i, j in zip(self.clean_up_df_text('movie-content'),
+                                                                  self.clean_up_df_text('story-line'))]
 
     def display_labels(self):
         return [[subject, content] for subject, content in
                 zip(self.df['movie-title'].tolist(), self.df['story-line'].tolist())]
 
-    @timed_cache(minutes=30)
-    def __cached_cleanup(self, col):
-        return clean_up_text(self.df, col)
-
-    def item_to_cluster(self):
-        return [i + ' ' + j for i, j in zip(self.__cached_cleanup('movie-content'),
-                                            self.__cached_cleanup('story-line'))]
