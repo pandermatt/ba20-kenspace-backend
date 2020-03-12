@@ -1,6 +1,7 @@
 import threading
 from typing import List, Tuple
 
+from api import errors
 from cluster_analytics import cluster_handler
 from models.clustered_data_structure import ClusteredStructure
 from util.logger import log
@@ -29,12 +30,17 @@ def cached_cluster(data) -> Tuple[str, List[ClusteredStructure]]:
     return cluster_handler.generate_cluster(data)
 
 
-def extract_data(auth_header):
-    return auth_header.split(":")[-1]
+def extract_data_from_auth_header(auth_header):
+    credentials = auth_header.split(":")
+    if len(credentials) != 2:
+        return errors.unauthorized_response()
+    if not credentials[0].startswith("Bearer "):
+        return errors.unauthorized_response()
+    return credentials[1]
 
 
 def generate_queries(uuid, stopwords, auth_header):
-    selected_data = extract_data(auth_header)
+    selected_data = extract_data_from_auth_header(auth_header)
     if uuid is "":
         uuid, result = start_cluster_generation_thread(selected_data)
     else:
