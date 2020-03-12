@@ -14,8 +14,8 @@ app = Flask(__name__)
 CORS(
     app,
     resources={
-        "/auth/": {"origins": ["http://localhost:8080", "http://pandermatt.ch"]},
-        "/queries/*": {"origins": ["http://localhost:8080", "http://pandermatt.ch"]},
+        "/auth/": {"origins": ["http://localhost:8080", "https://pandermatt.ch"]},
+        "/queries/*": {"origins": ["http://localhost:8080", "https://pandermatt.ch"]},
     }
 )
 authorizations = {
