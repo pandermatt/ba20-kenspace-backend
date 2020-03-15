@@ -21,5 +21,5 @@ class RecipeDataHandler(DataHandler):
         return clean_up_text(self.df, col)
 
     def item_to_cluster(self):
-        return [i + ' ' + j for i, j in zip(self.__cached_cleanup('reciepe-title'),
-                                            self.__cached_cleanup('reciepe-content'))]
+        return [i + j for i, j in zip(self.__cached_cleanup('reciepe-title'),
+                                      self.__cached_cleanup('reciepe-content'))]
