@@ -22,6 +22,7 @@ def clean_up_text(df, column_name):
 
 class NltkTextCleaner:
     def __init__(self):
+        log.info('Setup NLTK')
         nltk.download('punkt', quiet=True)
         nltk.download('averaged_perceptron_tagger', quiet=True)
         nltk.download('maxent_ne_chunker', quiet=True)
@@ -51,23 +52,10 @@ class NltkTextCleaner:
 
 class SpacyTextCleaner:
     def __init__(self):
+        log.info('Setup SpaCy')
         self.nlp = spacy.load("en_core_web_sm")
 
     def tokenizer(self, text):
         doc = self.nlp(text)
-        # return [e.lemma_ for e in doc if e.is_alpha and not e.is_stop] + [e.text for e in doc.ents]
-        return [e.text for e in doc.ents]
-
-# def update_progress_bar():
-#     global i, total
-#     i += 1
-#     progress_bar(i, total)
-#
-#
-# def progress_bar(value, endvalue, bar_length=50):
-#     percent = float(value) / endvalue
-#     arrow = '-' * int(round(percent * bar_length) - 1) + '>'
-#     spaces = ' ' * (bar_length - len(arrow))
-#
-#     sys.stdout.write("\rPercent: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
-#     sys.stdout.flush()
+        return [e.lemma_ for e in doc if e.is_alpha and not e.is_stop]
+        # return [e.text for e in doc.ents]
