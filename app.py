@@ -30,7 +30,7 @@ swagger_ui_enabled = '/'
 if config.get_env('PRODUCTION') == 'Y':
     swagger_ui_enabled = False
 
-api = Api(app, version='0.0.1', title='KenSpace API',
+api = Api(app, version='0.1.0', title='KenSpace API',
           description='API for KenSpace',
           security='Bearer Auth',
           authorizations=authorizations,
