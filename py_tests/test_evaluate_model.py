@@ -57,28 +57,46 @@ def test_calculate_purity():
 
 
 def test_calculate_entropy():
-    assert calculate_entropy(cluster_id_genres_mapping, data, movie_title_genres_mapping) == pytest.approx(0)
+    assert calculate_entropy(cluster_id_genres_mapping, data, movie_title_genres_mapping,
+                             all_labels=False) == pytest.approx(0)
+    assert calculate_entropy(cluster_id_genres_mapping, data, movie_title_genres_mapping,
+                             all_labels=True) == pytest.approx(0)
+    cluster_id = {
+        121: {},
+    }
+    data_2 = [
+        ClusteredStructure('Toy Story', [], 121),
+        ClusteredStructure('Jumanji', [], 121),
+    ]
+    genre = {
+        'Toy Story': ['Animation', 'Comedy', 'Family'],
+        'Jumanji': ['Adventure', 'Fantasy'],
+    }
+    assert calculate_entropy(cluster_id, data_2, genre, all_labels=False) == pytest.approx(1)
+    assert calculate_entropy(cluster_id, data_2, genre, all_labels=True) == pytest.approx(1.0766913)
+    data_3 = [
+        ClusteredStructure('Toy Story', [], 121),
+        ClusteredStructure('Toy Story 2', [], 121),
+        ClusteredStructure('Toy Story 3', [], 121),
+        ClusteredStructure('Jumanji', [], 121),
+    ]
+    genre_3 = {
+        'Toy Story': ['Animation', 'Comedy', 'Family'],
+        'Toy Story 2': ['Animation', 'Comedy', 'Family'],
+        'Toy Story 3': ['Animation', 'Comedy', 'Family'],
+        'Jumanji': ['Adventure', 'Fantasy'],
+    }
+    assert calculate_entropy(cluster_id, data_3, genre_3, all_labels=True) == pytest.approx(0.832857131)
+    assert calculate_entropy(cluster_id, data_3, genre_3, all_labels=False) == pytest.approx(0.81127812)
     assert calculate_entropy(
-        {
-            121: {'Animation': 1, 'Comedy': 1, 'Family': 2, 'Adventure': 1, 'Fantasy': 1},
-        },
+        cluster_id,
         [
             ClusteredStructure('Toy Story', [], 121),
             ClusteredStructure('Jumanji', [], 121),
+            ClusteredStructure('Pascal', [], 121),
         ],
         {
-            'Toy Story': ['Animation', 'Comedy', 'Family'],
-            'Jumanji': ['Adventure', 'Fantasy', 'Family'],
-        }) == pytest.approx(0.861353)
-    assert calculate_entropy(
-        {
-            121: {'Animation': 1, 'Fantasy': 1},
-        },
-        [
-            ClusteredStructure('Toy Story', [], 121),
-            ClusteredStructure('Jumanji', [], 121),
-        ],
-        {
-            'Toy Story': ['Animation'],
-            'Jumanji': ['Fantasy'],
-        }) == pytest.approx(1)
+            'Toy Story': ['Fantasy', 'Advent'],
+            'Jumanji': ['Fantasy', 'Advent'],
+            'Pascal': ['Fantasy', 'Advent'],
+        }) == pytest.approx(0)

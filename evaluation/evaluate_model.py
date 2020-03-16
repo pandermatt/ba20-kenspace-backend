@@ -35,7 +35,7 @@ def calculate_purity(cluster_id_genres_mapping, data, movie_title_genres_mapping
     return purity
 
 
-def calculate_entropy(cluster_id_genres_mapping, data, movie_title_genres_mapping):
+def calculate_entropy(cluster_id_genres_mapping, data, movie_title_genres_mapping, all_labels=True):
     entropy = 0
     n = len(data)
     for cluster_id in cluster_id_genres_mapping.keys():
@@ -49,10 +49,19 @@ def calculate_entropy(cluster_id_genres_mapping, data, movie_title_genres_mappin
             continue
 
         sum_clusters = 0
-        n_r = len(movie_classes)
-        for _, group_clusters in x.most_common():
-            sum_clusters += (group_clusters / n_r) * math.log(group_clusters / n_r, 2)
-        entropy += (len(current_cluster) / n) * (- (1 / math.log(q, 2)) * sum_clusters)
+        n_r = len(current_cluster)
+
+        if all_labels:
+            for _, group_clusters in x.most_common():
+                sum_clusters += (group_clusters / n_r) * math.log(group_clusters / n_r, 2)
+            entropy += (n_r / n) * (- (1 / math.log(q, 2)) * sum_clusters)
+        else:
+            most_common = x.most_common(1)[0][1]
+            if n_r - most_common == 0:
+                continue
+            for p in [most_common, n_r - most_common]:
+                sum_clusters += (p / n_r) * math.log(p / n_r, 2)
+            entropy += (n_r / n) * (-1 * sum_clusters)
     return entropy
 
 
@@ -90,7 +99,7 @@ def evaluate_model():
     print(f"----> Purity {purity * 100}")
 
     entropy = calculate_entropy(cluster_id_genres_mapping, data, movie_title_genres_mapping)
-    print(f"----> Entropy {entropy * 100}")
+    print(f"----> Entropy {entropy}")
 
 
 if __name__ == '__main__':
