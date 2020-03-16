@@ -14,7 +14,7 @@ from util.timed_cache import timed_cache
 def generate_cluster(selected_data, max_iteration=10000) -> Tuple[str, List[ClusteredStructure]]:
     data_handler = initialize_data(selected_data)
 
-    log.info(f'Generating KMeans Cluster')
+    log.info(f'Generating KMeans with {data_handler.calculate_n_clusters()} Clusters')
     k_cluster = KMeansCluster(data_handler.item_to_cluster(),
                               data_handler.calculate_n_clusters(),
                               data_handler.TOP_TERMS_PER_CLUSTER,
