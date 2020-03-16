@@ -1,0 +1,3 @@
+kenspace.cloudlab.zhaw.ch
+
+reverse_proxy localhost:5000
