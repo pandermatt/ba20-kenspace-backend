@@ -1,6 +1,6 @@
 import os
 
-import joblib
+import dill as dill
 
 from api import errors
 from cluster_analytics.k_means_clusterer import KMeansCluster
@@ -17,7 +17,8 @@ def save_model_to_disk(model: KMeansCluster, data: str):
     if not config.SAVE_TO_FILE:
         return
     filename = __get_filename(data, model.uuid)
-    joblib.dump(model, filename)
+    with open(filename, 'wb') as f:
+        dill.dump(model, f)
 
 
 def load_model_from_disk(uuid: str, data: str) -> KMeansCluster:
@@ -25,14 +26,16 @@ def load_model_from_disk(uuid: str, data: str) -> KMeansCluster:
     if not os.path.isfile(filename):
         log.error(f"File '{filename}' does not exist")
         errors.not_found_response()
-    return joblib.load(filename)
+    with open(filename, "rb") as f:
+        return dill.load(f)
 
 
 def save_data_to_disk(data_handler: DataHandler, data: str):
     if not config.SAVE_TO_FILE:
         return
     filename = __get_filename("data", data)
-    joblib.dump(data_handler, filename)
+    with open(filename, 'wb') as f:
+        dill.dump(data_handler, f)
 
 
 def load_data_from_disk(data: str) -> DataHandler:
@@ -40,4 +43,5 @@ def load_data_from_disk(data: str) -> DataHandler:
     if not os.path.isfile(filename):
         log.error(f"File '{filename}' does not exist")
         errors.not_found_response()
-    return joblib.load(filename)
+    with open(filename, "rb") as f:
+        return dill.load(f)

@@ -1,8 +1,8 @@
+dill
 flask
 flask-cors
 flask-httpauth
 flask-restx
-joblib
 nltk
 pandas
 PyYAML

@@ -6,8 +6,12 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from config import config
 
 
-def identity_func(args):
-    return args
+def identity_func(stopwords):
+    def func(token):
+        if stopwords and token in stopwords:
+            return [token]
+        return token
+    return func
 
 
 class KMeansCluster:
@@ -25,7 +29,8 @@ class KMeansCluster:
         self.calculate()
 
     def calculate(self, stopwords=None):
-        self.vectorizer = TfidfVectorizer(stop_words=stopwords, max_df=0.8, tokenizer=identity_func, lowercase=False)
+        self.vectorizer = TfidfVectorizer(stop_words=stopwords, max_df=0.8, tokenizer=identity_func(stopwords),
+                                          lowercase=False)
         self.tfidf_matrix = self.vectorizer.fit_transform(self.documents)
 
         self.model = KMeans(n_clusters=self.n_clusters, init='k-means++', max_iter=self.max_iteration,
