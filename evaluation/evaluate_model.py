@@ -6,8 +6,9 @@ import math
 import numpy as np
 import pandas as pd
 
-from cluster_analytics.cluster_handler import generate_cluster
+from cluster_analytics.cluster_handler import generate_k_means
 from config import config
+from data_import import csv_data_handler
 
 
 def print_cluster_probability(cluster_map):
@@ -65,8 +66,8 @@ def calculate_entropy(cluster_id_genres_mapping, data, movie_title_genres_mappin
     return entropy
 
 
-def evaluate_model():
-    uuid, data = generate_cluster("MovieDb", max_iteration=10)
+def evaluate_model(data, max_iterations=100):
+    uuid, data = generate_k_means(data, 'Test Data Set', max_iterations)
 
     path = config.input_data_file('movies_metadata.csv')
     df = pd.read_csv(path)
@@ -93,14 +94,29 @@ def evaluate_model():
                     m[genre] = 1
             else:
                 cluster_id_genres_mapping[id_as_int] = {genre: 1}
-    print_cluster_probability(cluster_id_genres_mapping)
+    # print_cluster_probability(cluster_id_genres_mapping)
 
     purity = calculate_purity(cluster_id_genres_mapping, data, movie_title_genres_mapping)
     print(f"----> Purity {purity * 100}")
 
     entropy = calculate_entropy(cluster_id_genres_mapping, data, movie_title_genres_mapping)
     print(f"----> Entropy {entropy}")
+    return purity, entropy
 
 
 if __name__ == '__main__':
-    evaluate_model()
+    config.SAVE_TO_FILE = False
+
+    nltk_result = []
+    spacy_result = []
+
+    config.CLEAN_UP_METHOD = "nltk"
+    for i in range(5):
+        nltk_result.append(evaluate_model(csv_data_handler.MovieDbHandler()))
+
+    config.CLEAN_UP_METHOD = "spacy"
+    for i in range(5):
+        spacy_result.append(evaluate_model(csv_data_handler.MovieDbHandler()))
+
+    print(nltk_result)
+    print(spacy_result)

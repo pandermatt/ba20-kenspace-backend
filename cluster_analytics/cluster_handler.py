@@ -11,23 +11,21 @@ from util.logger import log
 from util.timed_cache import timed_cache
 
 
-def generate_cluster(selected_data, max_iteration=10000) -> Tuple[str, List[ClusteredStructure]]:
+def generate_cluster(selected_data) -> Tuple[str, List[ClusteredStructure]]:
     data_handler = initialize_data(selected_data)
 
-    log.info(f'Generating KMeans with {data_handler.calculate_n_clusters()} Clusters')
+    return generate_k_means(data_handler, selected_data)
+
+
+def generate_k_means(data_handler, selected_data, max_iteration=10000, n_clusters=None):
+    log.info(f'Generating KMeans with {n_clusters or data_handler.calculate_n_clusters()} Clusters')
     k_cluster = KMeansCluster(data_handler.item_to_cluster(),
-                              data_handler.calculate_n_clusters(),
+                              n_clusters or data_handler.calculate_n_clusters(),
                               data_handler.TOP_TERMS_PER_CLUSTER,
                               max_iteration)
-    uuid = k_cluster.uuid
-    log.info(f'KMeans Clustering (UUID: {uuid}) Loaded')
-
     storage_io.save_model_to_disk(k_cluster, selected_data)
 
-    log.info(f'Generating Prediction (UUID: {uuid})')
-
-    terms = remove_rare_terms(k_cluster.get_terms())
-    return uuid, prepare_clustered_data_structure(data_handler.display_labels(), terms, k_cluster.get_cluster_id())
+    return k_cluster.uuid, prepare_clustered_data_structure(data_handler.display_labels(), k_cluster)
 
 
 @timed_cache(minutes=100)
@@ -40,13 +38,13 @@ def load_cluster(uuid: str, stopwords: str, selected_data: str) -> Tuple[str, Li
         log.info(f'KMeans with Stopwords {json.loads(stopwords)}')
         k_cluster.calculate(json.loads(stopwords))
 
-    terms = remove_rare_terms(k_cluster.get_terms())
-    return uuid, prepare_clustered_data_structure(data_handler.display_labels(), terms, k_cluster.get_cluster_id())
+    return uuid, prepare_clustered_data_structure(data_handler.display_labels(), k_cluster)
 
 
-def prepare_clustered_data_structure(labels, terms, cluster_ids) -> List[ClusteredStructure]:
+def prepare_clustered_data_structure(labels, k_cluster) -> List[ClusteredStructure]:
+    log.info(f'Generating Prediction (UUID: {k_cluster.uuid})')
     return [ClusteredStructure(label, term, str(cluster_id)) for label, term, cluster_id in
-            zip(labels, terms, cluster_ids)]
+            zip(labels, remove_rare_terms(k_cluster.get_terms()), k_cluster.get_cluster_id())]
 
 
 def remove_rare_terms(cluster_word_list):

@@ -10,12 +10,21 @@ from util.logger import log
 
 def clean_up_text(df, column_name):
     log.info('Starting Text Cleanup')
-    if config.get_env("PROCESSES_NUMBER") < 2:
-        # for non multiprocessing OS
-        return df[column_name].apply(lambda x: NltkTextCleaner().tokenizer(x)).tolist()
+    should_use_multiprocessing = config.get_env("PROCESSES_NUMBER") < 2
+
+    if config.CLEAN_UP_METHOD == "nltk":
+        class_to_use = NltkTextCleaner()
+    elif config.CLEAN_UP_METHOD == "spacy":
+        class_to_use = SpacyTextCleaner()
+    else:
+        log.warn(f'{config.CLEAN_UP_METHOD} not found')
+        return
+
+    if should_use_multiprocessing:
+        return df[column_name].apply(lambda x: class_to_use.tokenizer(x)).tolist()
     start_time = time.time()
     with mp.Pool() as pool:
-        result = pool.map(SpacyTextCleaner().tokenizer, df[column_name])
+        result = pool.map(class_to_use.tokenizer, df[column_name])
     log.info("Finished Text Clean up after %s seconds" % (time.time() - start_time))
     return result
 
@@ -30,7 +39,6 @@ class NltkTextCleaner:
         nltk.download('wordnet', quiet=True)
         nltk.download('stopwords', quiet=True)
 
-    # todo @pandermatt read https://www.machinelearningplus.com/nlp/lemmatization-examples-python/
     def tokenizer(self, text):
         tokens = nltk.word_tokenize(text.lower())
         lemmatizer = nltk.WordNetLemmatizer()
@@ -58,4 +66,3 @@ class SpacyTextCleaner:
     def tokenizer(self, text):
         doc = self.nlp(text)
         return [e.lemma_ for e in doc if e.is_alpha and not e.is_stop]
-        # return [e.text for e in doc.ents]
