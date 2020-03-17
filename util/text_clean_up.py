@@ -65,4 +65,4 @@ class SpacyTextCleaner:
 
     def tokenizer(self, text):
         doc = self.nlp(text)
-        return [e.lemma_ for e in doc if e.is_alpha and not e.is_stop]
+        return [e.lemma_.lower() for e in doc if e.is_alpha and not e.is_stop]
