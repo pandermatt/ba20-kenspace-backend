@@ -14,7 +14,7 @@ def get_or_create(dir_path):
 
 
 class Config:
-    CLEAN_UP_METHOD = "spacy"
+    CLEAN_UP_METHOD = "nltk"
     SAVE_TO_FILE = True
 
     __root_dir = dirname(abspath(__file__))

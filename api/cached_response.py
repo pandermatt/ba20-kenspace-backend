@@ -3,14 +3,14 @@ from typing import List, Tuple
 
 from api import errors
 from cluster_analytics import cluster_handler
-from models.clustered_data_structure import ClusteredStructure
+from models.clustered_data_structure import RestDisplayStructure
 from util.logger import log
 from util.timed_cache import timed_cache
 
 cluster_generation_lock = threading.Lock()
 
 
-def start_cluster_generation_thread(data) -> Tuple[str, List[ClusteredStructure]]:
+def start_cluster_generation_thread(data) -> Tuple[str, List[RestDisplayStructure]]:
     log.info('Starting request: {0}'.format(threading.active_count()))
     cluster_generation_lock.acquire()
     log.info('Enter cluster generation: ID {0}'.format(threading.current_thread().ident))
@@ -22,7 +22,7 @@ def start_cluster_generation_thread(data) -> Tuple[str, List[ClusteredStructure]
 
 
 @timed_cache(minutes=10)
-def cached_cluster(data) -> Tuple[str, List[ClusteredStructure]]:
+def cached_cluster(data) -> Tuple[str, List[RestDisplayStructure]]:
     """
     Cache Cluster for 10 min
     Attention: Different user will receive the same cluster in this 'life span'
@@ -50,7 +50,7 @@ def generate_queries(uuid, stopwords, auth_header):
         "uuid": uuid,
         "results": [{
             "text": cluster.text,
-            "content": cluster.content,
+            "meta_info": cluster.meta_info,
             "cluster_id": cluster.cluster_id,
             "data": cluster.terms
         } for cluster in result]

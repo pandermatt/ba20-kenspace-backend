@@ -16,13 +16,13 @@ class SongDbDataHandler(DataHandler):
                                                             self.clean_up_df_text('Lyrics'))]
 
     def display_labels(self):
-        return [[subject, content] for subject, content in
-                zip(('Rank '
-                     + self.df['Rank'].astype(str)
-                     + '. (Year '
-                     + self.df['Year'].astype(str)
-                     + '): "'
-                     + self.df['Song'].str.capitalize()
-                     + '" - '
-                     + self.df['Artist'].str.capitalize()).tolist(),
-                    self.df['Lyrics'].tolist())]
+        return ('Rank '
+                + self.df['Rank'].astype(str)
+                + '. (Year ' + self.df['Year'].astype(str)
+                + '): "'
+                + self.df['Song'].str.capitalize()
+                + '" - '
+                + self.df['Artist'].str.capitalize()).tolist()
+
+    def meta_info(self):
+        return [{"content": content} for content in self.df['Lyrics'].tolist()]

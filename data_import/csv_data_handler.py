@@ -40,17 +40,22 @@ class ImdbDataHandler(CsvDataHandler):
                                                             self.clean_up_df_text('story-line'))]
 
     def display_labels(self):
-        return [[subject, content] for subject, content in
-                zip(self.df['movie-title'].tolist(), self.df['story-line'].tolist())]
+        return self.df['movie-title'].tolist()
+
+    def meta_info(self):
+        return [{"content": content} for content in self.df['story-line'].tolist()]
 
 
 class MovieDbHandler(CsvDataHandler):
     def __init__(self):
         CsvDataHandler.__init__(self, 'MovieDB', 'movies_metadata.csv')
-        self.df = self.df[:1000]
+        self.df = self.df[:4000]
         self.saved_item_to_cluster = [i + j for i, j in zip(self.clean_up_df_text('overview'),
                                                             self.clean_up_df_text('original_title'))]
 
     def display_labels(self):
-        return [[subject, content] for subject, content in
-                zip(self.df['original_title'].tolist(), self.df['overview'].tolist())]
+        return self.df['original_title'].tolist()
+
+    def meta_info(self):
+        return [{"content": content, "image": 'http://image.tmdb.org/t/p/w185' + image} for content, image in
+                zip(self.df['overview'].tolist(), self.df['poster_path'].tolist())]
