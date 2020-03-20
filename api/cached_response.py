@@ -1,3 +1,4 @@
+import random
 import threading
 from typing import List, Tuple
 
@@ -46,12 +47,16 @@ def generate_queries(uuid, stopwords, auth_header):
     else:
         uuid, result = cluster_handler.load_cluster(uuid, stopwords, selected_data)
 
+    results = [{
+        "text": cluster.text,
+        "meta_info": cluster.meta_info,
+        "cluster_id": cluster.cluster_id,
+        "data": cluster.terms
+    } for cluster in result]
+
+    random.shuffle(results)
+
     return {
         "uuid": uuid,
-        "results": [{
-            "text": cluster.text,
-            "meta_info": cluster.meta_info,
-            "cluster_id": cluster.cluster_id,
-            "data": cluster.terms
-        } for cluster in result]
+        "results": results
     }
