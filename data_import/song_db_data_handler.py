@@ -16,10 +16,7 @@ class SongDbDataHandler(DataHandler):
                                                             self.clean_up_df_text('Lyrics'))]
 
     def display_labels(self):
-        return ('Rank '
-                + self.df['Rank'].astype(str)
-                + '. (Year ' + self.df['Year'].astype(str)
-                + '): "'
+        return ('"'
                 + self.df['Song'].str.capitalize()
                 + '" - '
                 + self.df['Artist'].str.capitalize()).tolist()
