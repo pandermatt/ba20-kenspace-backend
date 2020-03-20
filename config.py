@@ -4,7 +4,6 @@ from os.path import dirname, abspath, join, exists
 import yaml
 
 from util.logger import log
-from util.timed_cache import timed_cache
 
 
 def get_or_create(dir_path):
@@ -13,7 +12,11 @@ def get_or_create(dir_path):
         log.info("Creating: " + dir_path)
     return dir_path
 
+
 class Config:
+    CLEAN_UP_METHOD = "nltk"
+    SAVE_TO_FILE = True
+
     __root_dir = dirname(abspath(__file__))
     __application_config_path = join(__root_dir, 'application.yml')
     __config_file = None

@@ -15,6 +15,9 @@ class DataHandler:
     def display_labels(self):
         pass
 
+    def meta_info(self):
+        pass
+
     def item_to_cluster(self):
         return self.saved_item_to_cluster
 

@@ -1,4 +1,6 @@
+import http
 import traceback
+from datetime import datetime
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -8,6 +10,7 @@ from werkzeug.utils import escape
 from api import cached_response
 from api.auth import token_auth
 from config import config
+from file_io.feedback_writer import save_feedback
 from util.logger import log
 
 app = Flask(__name__)
@@ -16,6 +19,7 @@ CORS(
     resources={
         "/auth/": {"origins": ["http://localhost:8080", "https://pandermatt.ch"]},
         "/queries/*": {"origins": ["http://localhost:8080", "https://pandermatt.ch"]},
+        "/feedback/*": {"origins": ["http://localhost:8080", "https://pandermatt.ch"]},
     }
 )
 authorizations = {
@@ -39,6 +43,7 @@ api = Api(app, version='0.1.0', title='KenSpace API',
 
 queries = api.namespace('queries', description='Query operations')
 auth = api.namespace('auth', description='Authentication')
+feedback = api.namespace('feedback', description='Submit Feedback')
 
 uuid = api.model('UUID', {
     'uuid': fields.String(readOnly=True, description='unique identifier'),
@@ -63,6 +68,26 @@ class AuthHandler(Resource):
     def get(self):
         """Check Authentication"""
         return 'successful'
+
+
+@feedback.route('/')
+class FeedbackHandler(Resource):
+    @token_auth.login_required
+    def post(self):
+        """Submit feedback"""
+        save_feedback(
+            request.headers.get('Authorization'),
+            request.args.get('uuid'),
+            request.args.get('isHelpful'),
+            request.args.get('movieTitle'),
+            request.args.get('search'),
+            request.args.get('facet'),
+            request.args.get('delete'),
+            request.args.get('similarClusterActive'),
+            request.args.get('resultCount'),
+            datetime.now()
+        )
+        return '', http.HTTPStatus.NO_CONTENT
 
 
 @app.after_request

@@ -1,12 +1,11 @@
-class ClusteredStructure:
-    __slots__ = ['text', 'content', 'terms', 'cluster_id']
+import json
 
-    def __init__(self, text, terms, cluster_id):
-        if isinstance(text, list):
-            self.text = text[0]
-            self.content = text[1]
-        else:
-            self.text = text
-            self.content = ""
+
+class RestDisplayStructure:
+    __slots__ = ['text', 'content', 'terms', 'cluster_id', 'meta_info']
+
+    def __init__(self, text, meta_info, terms, cluster_id):
+        self.text = text
+        self.meta_info = meta_info
         self.terms = terms
-        self.cluster_id = cluster_id
+        self.cluster_id = str(cluster_id)
