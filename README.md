@@ -38,6 +38,19 @@ Use the `Makefile`:
 * `make build` builds the docker container
 * `make run` runs the Flask App
 
+## Access Docker file 
+
+```bash
+docker exec -it docker_kenspace_backend bash
+```
+
+or
+
+```bash
+docker ps
+docker exec -it <docker-container> bash
+```
+
 ### Clean up docker
 - List all containers (only IDs) `docker ps -aq`
 - Stop all running containers `docker stop $(docker ps -aq)`
