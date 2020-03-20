@@ -57,5 +57,5 @@ class MovieDbHandler(CsvDataHandler):
         return self.df['original_title'].tolist()
 
     def meta_info(self):
-        return [{"content": content, "image": 'http://image.tmdb.org/t/p/w185' + image} for content, image in
+        return [{"content": content, "image": 'https://image.tmdb.org/t/p/w185' + image} for content, image in
                 zip(self.df['overview'].tolist(), self.df['poster_path'].tolist())]
