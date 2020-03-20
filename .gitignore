@@ -24,3 +24,5 @@ htmlcov/
 *,cover
 application.yml
 data
+app.log
+feedback.csv
