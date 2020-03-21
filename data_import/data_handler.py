@@ -16,13 +16,13 @@ class DataHandler:
         pass
 
     def meta_info(self):
-        pass
+        return [{"content": ''}] * self.df.shape[0]
 
     def item_to_cluster(self):
         return self.saved_item_to_cluster
 
-    def clean_up_df_text(self, col):
-        return clean_up_text(self.df, col)
+    def clean_up_df_text(self, col, language="english"):
+        return clean_up_text(self.df, col, language)
 
     def calculate_n_clusters(self):
         """

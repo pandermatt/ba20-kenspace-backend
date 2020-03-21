@@ -5,10 +5,10 @@ from data_import.data_handler import DataHandler
 
 
 class CsvDataHandler(DataHandler):
-    def __init__(self, name, csv_file):
+    def __init__(self, name, csv_file, default_sep=","):
         DataHandler.__init__(self, name)
         path = config.input_data_file(csv_file)
-        df = pd.read_csv(path)
+        df = pd.read_csv(path, default_sep)
         self.df = df.fillna('')
 
 
@@ -31,6 +31,15 @@ class RecipeDataHandler(CsvDataHandler):
 
     def display_labels(self):
         return self.df['reciepe-title'].tolist()
+
+
+class GermanLyricDataHandler(CsvDataHandler):
+    def __init__(self):
+        CsvDataHandler.__init__(self, 'Recipe', 'text.csv', default_sep=";")
+        self.saved_item_to_cluster = self.clean_up_df_text('text', language="german")
+
+    def display_labels(self):
+        return self.df['text'].tolist()
 
 
 class ImdbDataHandler(CsvDataHandler):
@@ -57,5 +66,5 @@ class MovieDbHandler(CsvDataHandler):
         return self.df['original_title'].tolist()
 
     def meta_info(self):
-        return [{"content": content, "image": 'http://image.tmdb.org/t/p/w185' + image} for content, image in
+        return [{"content": content, "image": 'https://image.tmdb.org/t/p/w185' + image} for content, image in
                 zip(self.df['overview'].tolist(), self.df['poster_path'].tolist())]

@@ -9,20 +9,19 @@ class SongDbDataHandler(DataHandler):
         DataHandler.__init__(self, 'Song DB')
         path = config.input_data_file('billboard_lyrics_1964-2015.csv')
         self.df = pd.read_csv(path)
-        # self.df = self.df[df['Rank'] <= 1]
         self.df = self.df[self.df['Year'] >= 2000]
         self.df = self.df.fillna('')
         self.saved_item_to_cluster = [i + j for i, j in zip(self.clean_up_df_text('Song'),
                                                             self.clean_up_df_text('Lyrics'))]
 
     def display_labels(self):
-        return ('Rank '
-                + self.df['Rank'].astype(str)
-                + '. (Year ' + self.df['Year'].astype(str)
-                + '): "'
+        return ('"'
                 + self.df['Song'].str.capitalize()
                 + '" - '
-                + self.df['Artist'].str.capitalize()).tolist()
+                + self.df['Artist'].str.capitalize()
+                + ' ('
+                + self.df['Year'].astype(str)
+                + ')').tolist()
 
     def meta_info(self):
         return [{"content": content} for content in self.df['Lyrics'].tolist()]
