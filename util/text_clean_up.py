@@ -3,19 +3,21 @@ import time
 
 import nltk
 import spacy
+from spacy.symbols import PERSON
 
 from config import config
 from util.logger import log
 
 
-def clean_up_text(df, column_name):
+def clean_up_text(df, column_name, language):
     log.info('Starting Text Cleanup')
     should_use_multiprocessing = config.get_env("PROCESSES_NUMBER") < 2
+    log.info(f'Using {config.CLEAN_UP_METHOD}. Language={language}')
 
     if config.CLEAN_UP_METHOD == "nltk":
-        class_to_use = NltkTextCleaner()
+        class_to_use = NltkTextCleaner(language)
     elif config.CLEAN_UP_METHOD == "spacy":
-        class_to_use = SpacyTextCleaner()
+        class_to_use = SpacyTextCleaner(language)
     else:
         log.warn(f'{config.CLEAN_UP_METHOD} not found')
         return
@@ -30,7 +32,7 @@ def clean_up_text(df, column_name):
 
 
 class NltkTextCleaner:
-    def __init__(self):
+    def __init__(self, language):
         log.info('Setup NLTK')
         nltk.download('punkt', quiet=True)
         nltk.download('averaged_perceptron_tagger', quiet=True)
@@ -38,13 +40,14 @@ class NltkTextCleaner:
         nltk.download('words', quiet=True)
         nltk.download('wordnet', quiet=True)
         nltk.download('stopwords', quiet=True)
+        self.language = language
 
     def tokenizer(self, text):
         tokens = nltk.word_tokenize(text.lower())
         lemmatizer = nltk.WordNetLemmatizer()
 
         tokens = [t for t in tokens if
-                  t not in nltk.corpus.stopwords.words(config.get_env('DATA_LANGUAGE')) and t.isalpha()]
+                  t not in nltk.corpus.stopwords.words(self.language) and t.isalpha()]
         tokens = [lemmatizer.lemmatize(t, self.wordnet_pos(t)) for t in tokens]
         return tokens
 
@@ -59,10 +62,57 @@ class NltkTextCleaner:
 
 
 class SpacyTextCleaner:
-    def __init__(self):
+    def __init__(self, language):
         log.info('Setup SpaCy')
-        self.nlp = spacy.load("en_core_web_sm")
+        if language == "english":
+            self.nlp = spacy.load("en_core_web_sm")
+        elif language == "german":
+            self.nlp = spacy.load("de_core_news_sm")
 
     def tokenizer(self, text):
         doc = self.nlp(text)
-        return [e.lemma_.lower() for e in doc if e.is_alpha and not e.is_stop]
+
+        keyword = PERSON
+        return self.__tokenize_keyword(doc, keyword)
+
+    def __tokenize_keyword(self, doc, keyword):
+        tokens = []
+        temp_arr = []
+        for token in doc:
+            if token.ent_type == keyword:
+                temp_arr.append(str(token))
+            elif str(token) == '-':
+                tokens.append(str(token))
+            elif len(temp_arr) > 0:
+                tokens.append(" ".join(temp_arr).lower())
+                temp_arr = []
+            else:
+                if not token.is_stop and token.is_alpha:
+                    tokens.append(str(token).lower())
+        return self.__merge_tokens(tokens)
+
+    def __merge_tokens(self, tokens):
+        for i in range(len(tokens)):
+            for j in range(len(tokens)):
+                # picks always the full name
+                if tokens[j] in tokens[i]:
+                    tokens[j] = tokens[i]
+                elif tokens[i] in tokens[j]:
+                    tokens[i] = tokens[j]
+        return self.__merge_prefix_name(tokens)
+
+    @staticmethod
+    def __merge_prefix_name(tokens):
+        result = []
+        for i in range(len(tokens)):
+            t = str(tokens[i])
+            if t == '-' and 0 < i < len(tokens) - 1:
+                element = str(tokens[i - 1]) + t + str(tokens[i + 1])
+                result.append(element)
+            elif t != '-' and i < len(tokens) - 1 and str(tokens[i + 1]) == '-':
+                continue
+            elif t != '-' and i > 0 and str(tokens[i - 1]) == '-':
+                continue
+            else:
+                result.append(str(tokens[i]))
+        return result

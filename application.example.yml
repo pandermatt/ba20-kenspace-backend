@@ -1,4 +1,3 @@
-DATA_LANGUAGE: "english"
 AUTH_KEY:
   - "<YOUR-KEY>:SongDb"
   - "<YOUR-KEY>:Imdb"
