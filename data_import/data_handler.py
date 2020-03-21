@@ -16,7 +16,7 @@ class DataHandler:
         pass
 
     def meta_info(self):
-        return [] * self.df.shape[0]
+        return [{"content": ''}] * self.df.shape[0]
 
     def item_to_cluster(self):
         return self.saved_item_to_cluster
