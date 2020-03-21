@@ -22,7 +22,8 @@ def initialize_data(selected_data: str) -> DataHandler:
         'MovieDb': csv_data_handler.MovieDbHandler,
         'Recipe': csv_data_handler.RecipeDataHandler,
         'SongDb': song_db_data_handler.SongDbDataHandler,
-        'WhatsApp': whats_app_data_handler.WhatsAppDataHandler
+        'WhatsApp': whats_app_data_handler.WhatsAppDataHandler,
+        'GermanLyric': csv_data_handler.GermanLyricDataHandler
     }
 
     if exists(config.model_data_file(f'data-{selected_data}.sav')):
