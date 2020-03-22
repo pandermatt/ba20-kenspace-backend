@@ -1,4 +1,3 @@
-import random
 import threading
 from typing import List, Tuple
 
@@ -53,8 +52,6 @@ def generate_queries(uuid, stopwords, auth_header):
         "cluster_id": cluster.cluster_id,
         "data": cluster.terms
     } for cluster in result]
-
-    random.shuffle(results)
 
     return {
         "uuid": uuid,

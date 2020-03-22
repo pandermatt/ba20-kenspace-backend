@@ -1,5 +1,6 @@
 import itertools
 import json
+import random
 from collections import Counter
 from typing import List, Tuple
 
@@ -25,9 +26,7 @@ def generate_k_means(data_handler, selected_data, max_iteration=10000, n_cluster
                               max_iteration)
     storage_io.save_model_to_disk(k_cluster, selected_data)
 
-    return k_cluster.uuid, prepare_clustered_data_structure(data_handler.display_labels(),
-                                                            data_handler.meta_info(),
-                                                            k_cluster)
+    return k_cluster.uuid, prepare_clustered_data_structure(data_handler, k_cluster)
 
 
 @timed_cache(minutes=100)
@@ -40,13 +39,21 @@ def load_cluster(uuid: str, stopwords: str, selected_data: str) -> Tuple[str, Li
         log.info(f'KMeans with Stopwords {json.loads(stopwords)}')
         k_cluster.calculate(json.loads(stopwords))
 
-    return uuid, prepare_clustered_data_structure(data_handler.display_labels(), data_handler.meta_info(), k_cluster)
+    return uuid, prepare_clustered_data_structure(data_handler, k_cluster)
 
 
-def prepare_clustered_data_structure(labels, meta_info, k_cluster) -> List[RestDisplayStructure]:
+def prepare_clustered_data_structure(data_handler, k_cluster) -> List[RestDisplayStructure]:
     log.info(f'Generating Prediction (UUID: {k_cluster.uuid})')
-    return [RestDisplayStructure(label, meta_info, term, cluster_id) for label, meta_info, term, cluster_id in
-            zip(labels, meta_info, remove_rare_terms(k_cluster.get_terms()), k_cluster.get_cluster_id())]
+    result = [RestDisplayStructure(label, meta_info, term, cluster_id)
+              for label, meta_info, term, cluster_id in
+              zip(data_handler.display_labels(),
+                  data_handler.meta_info(),
+                  remove_rare_terms(k_cluster.get_terms()),
+                  k_cluster.get_cluster_id())]
+
+    if data_handler.SHUFFLE_DATA:
+        random.shuffle(result)
+    return result
 
 
 def remove_rare_terms(cluster_word_list):

@@ -26,6 +26,7 @@ class MonsterDataHandler(CsvDataHandler):
 class RecipeDataHandler(CsvDataHandler):
     def __init__(self):
         CsvDataHandler.__init__(self, 'Recipe', 'epicurious.csv')
+        self.SHUFFLE_DATA = False
         self.saved_item_to_cluster = [i + j for i, j in zip(self.clean_up_df_text('reciepe-title'),
                                                             self.clean_up_df_text('reciepe-content'))]
 
@@ -36,6 +37,7 @@ class RecipeDataHandler(CsvDataHandler):
 class GermanLyricDataHandler(CsvDataHandler):
     def __init__(self):
         CsvDataHandler.__init__(self, 'Recipe', 'text.csv', default_sep=";")
+        self.SHUFFLE_DATA = False
         self.saved_item_to_cluster = self.clean_up_df_text('text', language="german")
 
     def display_labels(self):
