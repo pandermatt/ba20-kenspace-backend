@@ -1,3 +1,4 @@
+import json
 from os.path import exists
 
 from api import errors
@@ -10,21 +11,28 @@ from util.timed_cache import timed_cache
 
 
 @timed_cache(minutes=100)
-def initialize_data(selected_data: str) -> DataHandler:
+def initialize_data(selected_data: str, settings) -> DataHandler:
     """
     Specifies which DataHandler to use
     """
 
     data_handler = {
         'Email': email_data_handler.EmailDataHandler,
-        'Imdb': csv_data_handler.ImdbDataHandler,
-        'Monster': csv_data_handler.MonsterDataHandler,
         'MovieDb': csv_data_handler.MovieDbHandler,
-        'Recipe': csv_data_handler.RecipeDataHandler,
         'SongDb': song_db_data_handler.SongDbDataHandler,
         'WhatsApp': whats_app_data_handler.WhatsAppDataHandler,
         'GermanLyric': csv_data_handler.GermanLyricDataHandler
     }
+
+    if settings and selected_data == 'custom':
+        settings = json.loads(settings)
+        if exists(config.model_data_file(f"data-{settings['filename']}.sav")):
+            return storage_io.load_data_from_disk(selected_data)
+
+        custom_csv = csv_data_handler.CustomCSV(settings)
+        storage_io.save_data_to_disk(custom_csv, settings['filename'])
+
+        return custom_csv
 
     if exists(config.model_data_file(f'data-{selected_data}.sav')):
         return storage_io.load_data_from_disk(selected_data)

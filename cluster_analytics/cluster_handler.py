@@ -12,8 +12,8 @@ from util.logger import log
 from util.timed_cache import timed_cache
 
 
-def generate_cluster(selected_data) -> Tuple[str, List[RestDisplayStructure]]:
-    data_handler = initialize_data(selected_data)
+def generate_cluster(selected_data, settings) -> Tuple[str, List[RestDisplayStructure]]:
+    data_handler = initialize_data(selected_data, settings)
 
     return generate_k_means(data_handler, selected_data)
 
@@ -30,8 +30,8 @@ def generate_k_means(data_handler, selected_data, max_iteration=10000, n_cluster
 
 
 @timed_cache(minutes=100)
-def load_cluster(uuid: str, stopwords: str, selected_data: str) -> Tuple[str, List[RestDisplayStructure]]:
-    data_handler = initialize_data(selected_data)
+def load_cluster(uuid: str, stopwords: str, selected_data: str, settings) -> Tuple[str, List[RestDisplayStructure]]:
+    data_handler = initialize_data(selected_data, settings)
 
     k_cluster = storage_io.load_model_from_disk(uuid, selected_data)
 
