@@ -5,12 +5,14 @@ from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_restx import Api, Resource, fields
+from werkzeug.datastructures import FileStorage
 from werkzeug.utils import escape
 
 from api import cached_response
 from api.auth import token_auth
 from config import config
 from file_io.feedback_writer import save_feedback
+from file_io.file_upload import handle_file_upload
 from util.logger import log
 
 app = Flask(__name__)
@@ -20,6 +22,7 @@ CORS(
         "/auth/": {"origins": ["http://localhost:8080", "https://pandermatt.ch"]},
         "/queries/*": {"origins": ["http://localhost:8080", "https://pandermatt.ch"]},
         "/feedback/*": {"origins": ["http://localhost:8080", "https://pandermatt.ch"]},
+        "/upload/*": {"origins": ["http://localhost:8080", "https://pandermatt.ch"]},
     }
 )
 authorizations = {
@@ -44,6 +47,7 @@ api = Api(app, version='0.1.0', title='KenSpace API',
 queries = api.namespace('queries', description='Query operations')
 auth = api.namespace('auth', description='Authentication')
 feedback = api.namespace('feedback', description='Submit Feedback')
+upload = api.namespace('upload', description='Upload Data')
 
 uuid = api.model('UUID', {
     'uuid': fields.String(readOnly=True, description='unique identifier'),
@@ -58,7 +62,8 @@ class QueryList(Resource):
         return cached_response.generate_queries(
             escape(request.args.get('uuid')),
             request.args.get('deletedWords'),
-            request.headers.get('Authorization')
+            request.headers.get('Authorization'),
+            request.args.get('settings')
         )
 
 
@@ -88,6 +93,20 @@ class FeedbackHandler(Resource):
             datetime.now()
         )
         return '', http.HTTPStatus.NO_CONTENT
+
+
+upload_parser = api.parser()
+upload_parser.add_argument('file', location='files',
+                           type=FileStorage, required=True)
+
+
+@upload.route('/')
+@upload.expect(upload_parser)
+class Upload(Resource):
+    @token_auth.login_required
+    def post(self):
+        response = handle_file_upload(request.files['file'])
+        return response, 201
 
 
 @app.after_request

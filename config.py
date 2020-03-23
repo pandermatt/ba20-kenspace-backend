@@ -27,8 +27,14 @@ class Config:
     def input_data_dir(self):
         return get_or_create(join(self.__data_dir(), 'input'))
 
+    def custom_input_data_dir(self):
+        return get_or_create(join(self.input_data_dir(), 'custom'))
+
     def input_data_file(self, file_name):
         return join(self.input_data_dir(), file_name)
+
+    def custom_input_file(self, file_name):
+        return join(self.custom_input_data_dir(), file_name)
 
     def model_data_dir(self):
         return get_or_create(join(self.__data_dir(), 'model'))
