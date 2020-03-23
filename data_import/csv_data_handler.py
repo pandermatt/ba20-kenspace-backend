@@ -27,7 +27,7 @@ class GermanLyricDataHandler(CsvDataHandler):
 class MovieDbHandler(CsvDataHandler):
     def __init__(self):
         CsvDataHandler.__init__(self, 'MovieDB', 'movies_metadata.csv')
-        self.df = self.df[:4000]
+        self.df = self.df[:10000]
         self.saved_item_to_cluster = [i + j for i, j in zip(self.clean_up_df_text('overview'),
                                                             self.clean_up_df_text('original_title'))]
 
