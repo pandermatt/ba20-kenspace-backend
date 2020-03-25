@@ -15,17 +15,23 @@ cluster_id_genres_mapping = {
     180: {'Action': 1, 'Adventure': 1, 'Thriller': 1},
     183: {'Adventure': 1, 'Action': 1, 'Thriller': 1}
 }
+
+
+def get_display_structure(title, model_id):
+    return RestDisplayStructure(title, [], [], model_id)
+
+
 data = [
-    RestDisplayStructure('Toy Story', [], 121),
-    RestDisplayStructure('Jumanji', [], 86),
-    RestDisplayStructure('Grumpier Old Men', [], 25),
-    RestDisplayStructure('Waiting to Exhale', [], 65),
-    RestDisplayStructure('Father of the Bride Part II', [], 90),
-    RestDisplayStructure('Heat', [], 11),
-    RestDisplayStructure('Sabrina', [], 106),
-    RestDisplayStructure('Tom and Huck', [], 24),
-    RestDisplayStructure('Sudden Death', [], 180),
-    RestDisplayStructure('GoldenEye', [], 183)
+    get_display_structure('Toy Story', 121),
+    get_display_structure('Jumanji', 86),
+    get_display_structure('Grumpier Old Men', 25),
+    get_display_structure('Waiting to Exhale', 65),
+    get_display_structure('Father of the Bride Part II', 90),
+    get_display_structure('Heat', 11),
+    get_display_structure('Sabrina', 106),
+    get_display_structure('Tom and Huck', 24),
+    get_display_structure('Sudden Death', 180),
+    get_display_structure('GoldenEye', 183)
 ]
 
 movie_title_genres_mapping = {'Toy Story': ['Animation', 'Comedy', 'Family'],
@@ -47,8 +53,8 @@ def test_calculate_purity():
             121: {'Animation': 1, 'Comedy': 1, 'Family': 1, 'Adventure': 1, 'Fantasy': 1},
         },
         [
-            RestDisplayStructure('Toy Story', [], 121),
-            RestDisplayStructure('Jumanji', [], 121),
+            get_display_structure('Toy Story', 121),
+            get_display_structure('Jumanji', 121),
         ],
         {
             'Toy Story': ['Animation', 'Comedy'],
@@ -65,8 +71,8 @@ def test_calculate_entropy():
         121: {},
     }
     data_2 = [
-        RestDisplayStructure('Toy Story', [], 121),
-        RestDisplayStructure('Jumanji', [], 121),
+        get_display_structure('Toy Story', 121),
+        get_display_structure('Jumanji', 121),
     ]
     genre = {
         'Toy Story': ['Animation', 'Comedy', 'Family'],
@@ -75,10 +81,10 @@ def test_calculate_entropy():
     assert calculate_entropy(cluster_id, data_2, genre, all_labels=False) == pytest.approx(1)
     assert calculate_entropy(cluster_id, data_2, genre, all_labels=True) == pytest.approx(1.0766913)
     data_3 = [
-        RestDisplayStructure('Toy Story', [], 121),
-        RestDisplayStructure('Toy Story 2', [], 121),
-        RestDisplayStructure('Toy Story 3', [], 121),
-        RestDisplayStructure('Jumanji', [], 121),
+        get_display_structure('Toy Story', 121),
+        get_display_structure('Toy Story 2', 121),
+        get_display_structure('Toy Story 3', 121),
+        get_display_structure('Jumanji', 121),
     ]
     genre_3 = {
         'Toy Story': ['Animation', 'Comedy', 'Family'],
@@ -91,9 +97,9 @@ def test_calculate_entropy():
     assert calculate_entropy(
         cluster_id,
         [
-            RestDisplayStructure('Toy Story', [], 121),
-            RestDisplayStructure('Jumanji', [], 121),
-            RestDisplayStructure('Pascal', [], 121),
+            get_display_structure('Toy Story', 121),
+            get_display_structure('Jumanji', 121),
+            get_display_structure('Pascal', 121),
         ],
         {
             'Toy Story': ['Fantasy', 'Advent'],
