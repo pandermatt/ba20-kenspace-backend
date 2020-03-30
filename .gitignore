@@ -26,3 +26,6 @@ application.yml
 data
 app.log
 feedback.csv
+evaluation/*.png
+evaluation/*.csv
+evaluation/*.pdf
