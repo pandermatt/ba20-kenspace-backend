@@ -9,17 +9,17 @@ from config import config
 from util.logger import log
 
 
-def clean_up_text(df, column_name, language):
+def clean_up_text(df, column_name, language, clean_up_method):
     log.info('Starting Text Cleanup')
     should_use_multiprocessing = config.get_env("PROCESSES_NUMBER") < 2
-    log.info(f'Using {config.CLEAN_UP_METHOD}. Language={language}')
+    log.info(f'Using {clean_up_method}. Language={language}')
 
-    if config.CLEAN_UP_METHOD == "nltk":
+    if clean_up_method == "nltk":
         class_to_use = NltkTextCleaner(language)
-    elif config.CLEAN_UP_METHOD == "spacy":
+    elif clean_up_method == "spacy":
         class_to_use = SpacyTextCleaner(language)
     else:
-        log.warn(f'{config.CLEAN_UP_METHOD} not found')
+        log.warn(f'{clean_up_method} not found')
         return
 
     if should_use_multiprocessing:

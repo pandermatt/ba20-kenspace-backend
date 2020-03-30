@@ -27,7 +27,7 @@ class GermanLyricDataHandler(CsvDataHandler):
 class MovieDbHandler(CsvDataHandler):
     def __init__(self):
         CsvDataHandler.__init__(self, 'MovieDB', 'movies_metadata.csv')
-        self.df = self.df[:10000]
+        self.df = self.df[:10_000]
         self.saved_item_to_cluster = [i + j for i, j in zip(self.clean_up_df_text('overview'),
                                                             self.clean_up_df_text('original_title'))]
 
@@ -46,8 +46,12 @@ class CustomCSV(CsvDataHandler):
 
         self.settings = settings
         self.saved_item_to_cluster = [i + j for i, j in
-                                      zip(self.clean_up_df_text(settings['display'], language=settings['language']),
-                                          self.clean_up_df_text(settings['content'], language=settings['language']))]
+                                      zip(self.clean_up_df_text(settings['display'],
+                                                                language=settings['language'],
+                                                                clean_up_method=settings['techniques']),
+                                          self.clean_up_df_text(settings['content'],
+                                                                language=settings['language'],
+                                                                clean_up_method=settings['techniques']))]
 
     def display_labels(self):
         return self.df[self.settings['display']].tolist()
