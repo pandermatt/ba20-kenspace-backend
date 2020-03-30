@@ -9,17 +9,20 @@ from config import config
 from util.logger import log
 
 
-def clean_up_text(df, column_name, language):
+def clean_up_text(df, column_name, language, clean_up_method):
     log.info('Starting Text Cleanup')
     should_use_multiprocessing = config.get_env("PROCESSES_NUMBER") < 2
-    log.info(f'Using {config.CLEAN_UP_METHOD}. Language={language}')
+    log.info(f'Using {clean_up_method}. Language={language}')
 
-    if config.CLEAN_UP_METHOD == "nltk":
+    if clean_up_method == "nltk":
         class_to_use = NltkTextCleaner(language)
-    elif config.CLEAN_UP_METHOD == "spacy":
+    elif clean_up_method == "spacy":
+        if language not in ['english', 'german']:
+            log.warn(f'SpaCy does not support {language}')
+            return
         class_to_use = SpacyTextCleaner(language)
     else:
-        log.warn(f'{config.CLEAN_UP_METHOD} not found')
+        log.warn(f'{clean_up_method} not found')
         return
 
     if should_use_multiprocessing:
@@ -94,7 +97,6 @@ class SpacyTextCleaner:
     def __merge_tokens(self, tokens):
         for i in range(len(tokens)):
             for j in range(len(tokens)):
-                # picks always the full name
                 if tokens[j] in tokens[i]:
                     tokens[j] = tokens[i]
                 elif tokens[i] in tokens[j]:
@@ -103,15 +105,16 @@ class SpacyTextCleaner:
 
     @staticmethod
     def __merge_prefix_name(tokens):
+        spacing = '-'
         result = []
         for i in range(len(tokens)):
             t = str(tokens[i])
-            if t == '-' and 0 < i < len(tokens) - 1:
+            if t == spacing and 0 < i < len(tokens) - 1:
                 element = str(tokens[i - 1]) + t + str(tokens[i + 1])
                 result.append(element)
-            elif t != '-' and i < len(tokens) - 1 and str(tokens[i + 1]) == '-':
+            elif t != spacing and i < len(tokens) - 1 and str(tokens[i + 1]) == spacing:
                 continue
-            elif t != '-' and i > 0 and str(tokens[i - 1]) == '-':
+            elif t != spacing and i > 0 and str(tokens[i - 1]) == spacing:
                 continue
             else:
                 result.append(str(tokens[i]))

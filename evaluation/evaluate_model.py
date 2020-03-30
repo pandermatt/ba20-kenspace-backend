@@ -1,5 +1,6 @@
 import ast
 import collections
+import csv
 import itertools
 import math
 
@@ -8,7 +9,7 @@ import pandas as pd
 
 from cluster_analytics.cluster_handler import generate_k_means
 from config import config
-from data_import import csv_data_handler
+from data_import.csv_data_handler import CsvDataHandler
 
 
 def print_cluster_probability(cluster_map):
@@ -101,22 +102,118 @@ def evaluate_model(data, max_iterations=100):
 
     entropy = calculate_entropy(cluster_id_genres_mapping, data, movie_title_genres_mapping)
     print(f"----> Entropy {entropy}")
-    return purity, entropy
+
+    F, overall_precision, overall_recall = calculate_precision_and_overall(cluster_id_genres_mapping, data,
+                                                                           movie_title_genres_mapping)
+    print(f"----> Precision {overall_precision}")
+    print(f"----> Recall {overall_recall}")
+    print(f"----> F {F}")
+
+    return [purity, entropy, overall_precision, overall_recall, F]
+
+
+def calculate_precision_and_overall(cluster_id_genres_mapping, data, movie_title_genres_mapping):
+    od = collections.OrderedDict(sorted(cluster_id_genres_mapping.items()))
+    overall_precision = 0
+    overall_recall = 0
+    overall_count = 0
+    for key, value in od.items():
+        elements = sorted(value.items(), key=lambda x: x[1], reverse=True)
+
+        items_in_cluster = [d for d in data if int(d.cluster_id) == key]
+        cluster_words = [d.terms for d in items_in_cluster]
+        flatten_list = list(itertools.chain.from_iterable(cluster_words))
+        counter_x = collections.Counter(flatten_list)
+
+        if not counter_x.most_common(2):
+            continue
+
+        recommend = counter_x.most_common(2)[0]
+        recommend2 = [[None]]
+        we_recommend = recommend[1]
+        if len(counter_x.most_common(2)) > 1:
+            recommend2 = counter_x.most_common(2)[1]
+            we_recommend += recommend2[1]
+
+        element = elements[0]
+        element2 = [[None]]
+        all_relevant = element[1]
+        if len(elements) > 1:
+            element2 = elements[1]
+            all_relevant += element2[1]
+
+        correct_recommended = 0
+        for item in items_in_cluster:
+            if ((recommend[0] in item.terms or recommend2[0] in item.terms) and
+                    (element[0] in movie_title_genres_mapping[item.text]
+                     or element2[0] in movie_title_genres_mapping[item.text])):
+                correct_recommended += 1
+        overall_precision += correct_recommended / we_recommend
+        overall_recall += correct_recommended / all_relevant
+        overall_count += 1
+    overall_precision = overall_precision / overall_count
+    overall_recall = overall_recall / overall_count
+
+    # Precision
+    # P = relevant recommendation / items we recommend
+    # Recall
+    # R = relevant recommendation / all relevant items
+    # Precision is the fraction of recommended items that is actually relevant to the user,
+    # Recall can be defined as the fraction of relevant items that are also part of the set of recommended items
+
+    F = (2 * overall_precision * overall_recall) / (overall_precision + overall_recall)
+    return F, overall_precision, overall_recall
+
+
+class TestDbHandler(CsvDataHandler):
+    def __init__(self):
+        CsvDataHandler.__init__(self, 'MovieDB', 'movies_metadata.csv')
+        self.df = self.df.sample(4000)
+        self.n_clusters = None
+        self.saved_item_to_cluster = [i + j for i, j in zip(self.clean_up_df_text('overview'),
+                                                            self.clean_up_df_text('original_title'))]
+
+    def display_labels(self):
+        return self.df['original_title'].tolist()
+
+    def calculate_n_clusters(self):
+        return self.n_clusters
+
+
+def save_results(fields):
+    with open(r'result.csv', 'a') as f:
+        writer = csv.writer(f)
+        writer.writerow(fields)
+        f.flush()
 
 
 if __name__ == '__main__':
     config.SAVE_TO_FILE = False
 
-    nltk_result = []
-    spacy_result = []
+    handler = TestDbHandler()
+    save_results(["N", "purity", "entropy", "overall_precision", "overall_recall", "F"])
 
-    config.CLEAN_UP_METHOD = "nltk"
-    for i in range(5):
-        nltk_result.append(evaluate_model(csv_data_handler.MovieDbHandler()))
+    # count = 5
+    # for j in range(100):
+    #     a = np.zeros([count, 6])
+    #     for i in range(count):
+    #         handler.TOP_TERMS_PER_CLUSTER = ((j + 1) * 5)
+    #         a[i, :] = [(j + 1) * 5] + evaluate_model(handler)
+    #     save_results(np.mean(a, axis=0))
 
-    config.CLEAN_UP_METHOD = "spacy"
-    for i in range(5):
-        spacy_result.append(evaluate_model(csv_data_handler.MovieDbHandler()))
+    count = 5
+    handler.TOP_TERMS_PER_CLUSTER = 50
+    for j in range(50):
+        a = np.zeros([count, 6])
+        for i in range(count):
+            handler.n_clusters = ((j + 1) * 20)
+            a[i, :] = [(j + 1) * 20] + evaluate_model(handler)
+        save_results(np.mean(a, axis=0))
 
-    print(nltk_result)
-    print(spacy_result)
+
+
+    # save_results(["purity", "entropy", "overall_precision", "overall_recall", "F"])
+    #
+    # handler = TestDbHandler()
+    # for i in range(50):
+    #     save_results(evaluate_model(handler))

@@ -22,8 +22,8 @@ class DataHandler:
     def item_to_cluster(self):
         return self.saved_item_to_cluster
 
-    def clean_up_df_text(self, col, language="english"):
-        return clean_up_text(self.df, col, language)
+    def clean_up_df_text(self, col, language="english", clean_up_method="nltk"):
+        return clean_up_text(self.df, col, language, clean_up_method)
 
     def calculate_n_clusters(self):
         """
