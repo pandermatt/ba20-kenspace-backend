@@ -19,10 +19,10 @@ app = Flask(__name__)
 CORS(
     app,
     resources={
-        "/auth/": {"origins": ["http://localhost:8080", "https://pandermatt.ch", "https://kenspace.ch/"]},
-        "/queries/*": {"origins": ["http://localhost:8080", "https://pandermatt.ch", "https://kenspace.ch/"]},
-        "/feedback/*": {"origins": ["http://localhost:8080", "https://pandermatt.ch", "https://kenspace.ch/"]},
-        "/upload/*": {"origins": ["http://localhost:8080", "https://pandermatt.ch", "https://kenspace.ch/"]},
+        "/auth/": {"origins": ["http://localhost:8080", "https://pandermatt.ch", "https://kenspace.ch"]},
+        "/queries/*": {"origins": ["http://localhost:8080", "https://pandermatt.ch", "https://kenspace.ch"]},
+        "/feedback/*": {"origins": ["http://localhost:8080", "https://pandermatt.ch", "https://kenspace.ch"]},
+        "/upload/*": {"origins": ["http://localhost:8080", "https://pandermatt.ch", "https://kenspace.ch"]},
     }
 )
 authorizations = {
