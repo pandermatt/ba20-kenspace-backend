@@ -26,12 +26,19 @@ class DataHandler:
         return clean_up_text(self.df, col, language, clean_up_method)
 
     def calculate_n_clusters(self):
-        """
-        map function: maps document size to n_clusters
-        """
-        document_size = self.df.shape[0]
-        upper_limit = config.get_env("N_CLUSTERS_UPPER_LIMIT")
-        result = ((17 * document_size) + 29800) / 9990
-        if result >= upper_limit:
-            result = upper_limit
-        return round(document_size / result)
+        return calculate_n_clusters_by_category(self.df.shape[0])['medium'][1]
+
+
+def calculate_n_clusters_by_category(document_size):
+    """
+    map function: maps document size to n_clusters
+    """
+    result_large = (29702 * document_size + 14914915) / 5000000
+    result_medium = (17 * document_size + 29800) / 9990
+    result_small = (4702 * document_size + 32812813) / 11000000
+
+    return {
+        'large': [round(result_large), round(document_size / result_large)],
+        'medium': [round(result_medium), round(document_size / result_medium)],
+        'small': [round(result_small), round(document_size / result_small)],
+    }

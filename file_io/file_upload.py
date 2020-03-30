@@ -6,6 +6,7 @@ from langdetect import detect
 from werkzeug.datastructures import FileStorage
 
 from config import config
+from data_import.data_handler import calculate_n_clusters_by_category
 from util.logger import log
 
 
@@ -24,5 +25,6 @@ def handle_file_upload(file_storage: FileStorage):
     return {
         'cols': [col for col in data.columns],
         'filename': file_uuid,
-        'language': iso639.to_name(detect(sample_text)).lower()
+        'language': iso639.to_name(detect(sample_text)).lower(),
+        'recommendationSet': calculate_n_clusters_by_category(data.shape[0])
     }
