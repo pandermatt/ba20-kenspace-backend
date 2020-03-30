@@ -1,3 +1,5 @@
+iso639
+langdetect
 faker
 dill
 flask

@@ -1,6 +1,8 @@
 import uuid
 
+import iso639
 import pandas as pd
+from langdetect import detect
 from werkzeug.datastructures import FileStorage
 
 from config import config
@@ -17,5 +19,10 @@ def handle_file_upload(file_storage: FileStorage):
     log.info(f'Extract CSV headers')
     data = pd.read_csv(filename)
 
-    return {'cols': [col for col in data.columns], 'filename': file_uuid}
+    sample_text = " ".join(map(str, data.iloc[0].tolist()))
 
+    return {
+        'cols': [col for col in data.columns],
+        'filename': file_uuid,
+        'language': iso639.to_name(detect(sample_text)).lower()
+    }
