@@ -6,8 +6,6 @@ import pandas as pd
 from config import config
 from data_import.data_handler import DataHandler
 from util.logger import log
-from util.text_clean_up import clean_up_text
-from util.timed_cache import timed_cache
 
 
 class EmailDataHandler(DataHandler):

@@ -20,8 +20,7 @@ def initialize_data(selected_data: str, settings) -> DataHandler:
         'Email': email_data_handler.EmailDataHandler,
         'MovieDb': csv_data_handler.MovieDbHandler,
         'SongDb': song_db_data_handler.SongDbDataHandler,
-        'WhatsApp': whats_app_data_handler.WhatsAppDataHandler,
-        'GermanLyric': csv_data_handler.GermanLyricDataHandler
+        'WhatsApp': whats_app_data_handler.WhatsAppDataHandler
     }
 
     if settings and selected_data == 'custom':

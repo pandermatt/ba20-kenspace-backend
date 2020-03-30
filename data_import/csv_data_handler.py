@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 from config import config
-from data_import.data_handler import DataHandler
+from data_import.data_handler import DataHandler, calculate_n_clusters_by_category
 
 
 class CsvDataHandler(DataHandler):
@@ -12,16 +12,6 @@ class CsvDataHandler(DataHandler):
         path = config.input_data_file(csv_file)
         df = pd.read_csv(path, default_sep)
         self.df = df.fillna('')
-
-
-class GermanLyricDataHandler(CsvDataHandler):
-    def __init__(self):
-        CsvDataHandler.__init__(self, 'Recipe', 'text.csv', default_sep=";")
-        self.SHUFFLE_DATA = False
-        self.saved_item_to_cluster = self.clean_up_df_text('text', language="german")
-
-    def display_labels(self):
-        return self.df['text'].tolist()
 
 
 class MovieDbHandler(CsvDataHandler):
@@ -45,6 +35,7 @@ class CustomCSV(CsvDataHandler):
         self.SHUFFLE_DATA = False
 
         self.settings = settings
+        self.cluster_size = settings['clusterSize']
         self.saved_item_to_cluster = [i + j for i, j in
                                       zip(self.clean_up_df_text(settings['display'],
                                                                 language=settings['language'],
@@ -58,3 +49,6 @@ class CustomCSV(CsvDataHandler):
 
     def meta_info(self):
         return [{"content": content} for content in self.df[self.settings['content']].tolist()]
+
+    def calculate_n_clusters(self):
+        return calculate_n_clusters_by_category(self.df.shape[0])[self.cluster_size][1]
