@@ -3,7 +3,7 @@ from os.path import exists
 
 from api import errors
 from config import config
-from data_import import email_data_handler, whats_app_data_handler, song_db_data_handler, csv_data_handler
+from data_import import email_data_handler, song_db_data_handler, csv_data_handler
 from data_import.data_handler import DataHandler
 from file_io import storage_io
 from util.logger import log
@@ -19,8 +19,7 @@ def initialize_data(selected_data: str, settings) -> DataHandler:
     data_handler = {
         'Email': email_data_handler.EmailDataHandler,
         'MovieDb': csv_data_handler.MovieDbHandler,
-        'SongDb': song_db_data_handler.SongDbDataHandler,
-        'WhatsApp': whats_app_data_handler.WhatsAppDataHandler
+        'SongDb': song_db_data_handler.SongDbDataHandler
     }
 
     if settings and selected_data == 'custom':
