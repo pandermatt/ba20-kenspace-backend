@@ -105,7 +105,7 @@ upload_parser.add_argument('file', location='files',
 class Upload(Resource):
     @token_auth.login_required
     def post(self):
-        response = handle_file_upload(request.files['file'])
+        response = handle_file_upload(request.files['file'], request.form.get('uploadType'))
         return response, 201
 
 
