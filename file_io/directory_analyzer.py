@@ -6,12 +6,11 @@ from zipfile import ZipFile
 import pandas as pd
 import textract
 
-from api.errors import error_response
 from config import config
 from util.logger import log
 
 ZIP_DIR_DEPTH = 3
-FILTER_OPTION_LIST = ['txt', 'pdf']
+FILTER_OPTION_LIST = ['txt', 'pdf', 'doc', 'docx', 'html', 'pptx']
 
 
 def generate_df_and_read_file_content(analytic_list):
@@ -30,21 +29,13 @@ def generate_df_and_read_file_content(analytic_list):
 
 
 def read_content(path_to_file, ending):
-    if ending == '.txt':
-        with open(path_to_file, 'r') as file:
-            return file.read().replace('\n', '')
-    elif ending == '.csv':
-        with open(path_to_file, 'r') as content_file:
-            return content_file.read()
-    elif ending == '.pdf':
-        return pdf_content(path_to_file)
-
-
-def pdf_content(path_to_file):
-    text = textract.process(path_to_file).decode('utf-8')
-    text = re.sub('[\n\t\f]', '', text)
-    text = text.replace('\r', ' ')
-    return text
+    ending_without_point = ending[1:]
+    if ending_without_point in FILTER_OPTION_LIST:
+        text = textract.process(path_to_file).decode('utf-8')
+        text = re.sub('[\n\t\f]', ' ', text)
+        text = text.replace('\r', ' ')
+        return text
+    return "Binary Content"
 
 
 class AnalyticsHelper:
@@ -67,14 +58,16 @@ class DirectoryAnalytics:
         path_as_string = ""
 
         all_files, all_strings = self.__list_of_files(zip_root_path, path_as_string, 0, True)
-        self.pandas_data = generate_df_and_read_file_content([AnalyticsHelper(zip_root_path, all_files, all_strings)])
-
-        ###########################
-        # WARNING: DELETES FOLDER #
-        ###########################
-        log.info(f'Remove Folder: {zip_root_path}')
-        import shutil
-        shutil.rmtree(zip_root_path)
+        try:
+            self.pandas_data = generate_df_and_read_file_content(
+                [AnalyticsHelper(zip_root_path, all_files, all_strings)])
+        finally:
+            ###########################
+            # WARNING: DELETES FOLDER #
+            ###########################
+            log.info(f'Remove Folder: {zip_root_path}')
+            import shutil
+            shutil.rmtree(zip_root_path)
 
     def __list_of_files(self, dir_name, dir_name_as_string, count, root_dir=False):
         if count > ZIP_DIR_DEPTH:
