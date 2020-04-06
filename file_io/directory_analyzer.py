@@ -1,14 +1,17 @@
 import os
+import re
 import uuid
 from zipfile import ZipFile
 
-import PyPDF2
 import pandas as pd
+import textract
 
+from api.errors import error_response
 from config import config
 from util.logger import log
 
 ZIP_DIR_DEPTH = 3
+FILTER_OPTION_LIST = ['txt', 'pdf']
 
 
 def generate_df_and_read_file_content(analytic_list):
@@ -38,14 +41,10 @@ def read_content(path_to_file, ending):
 
 
 def pdf_content(path_to_file):
-    pdf_file_obj = open(path_to_file, 'rb')
-    pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
-    data = []
-    for number in range(pdf_reader.numPages):
-        page_obj = pdf_reader.getPage(number)
-        data.append(page_obj.extractText())
-    pdf_file_obj.close()
-    return ' '.join(data)
+    text = textract.process(path_to_file).decode('utf-8')
+    text = re.sub('[\n\t\f]', '', text)
+    text = text.replace('\r', ' ')
+    return text
 
 
 class AnalyticsHelper:
@@ -58,7 +57,7 @@ class AnalyticsHelper:
 
 
 class DirectoryAnalytics:
-    def __init__(self, path_zip, filter_option_list):
+    def __init__(self, path_zip):
         zip_root_path = config.zip_input_data_dir(uuid.uuid4())
 
         log.info(f'Analyse Zip: {zip_root_path}')
@@ -67,13 +66,12 @@ class DirectoryAnalytics:
 
         path_as_string = ""
 
-        self.filter_option_list = filter_option_list
         all_files, all_strings = self.__list_of_files(zip_root_path, path_as_string, 0, True)
         self.pandas_data = generate_df_and_read_file_content([AnalyticsHelper(zip_root_path, all_files, all_strings)])
 
-        #########################
-        # WARNING: DELETES FOLDER
-        #########################
+        ###########################
+        # WARNING: DELETES FOLDER #
+        ###########################
         log.info(f'Remove Folder: {zip_root_path}')
         import shutil
         shutil.rmtree(zip_root_path)
@@ -111,7 +109,7 @@ class DirectoryAnalytics:
         if len(entries) > 1:
             # get data ending
             data_type = entries[len(entries) - 1]
-            if data_type in self.filter_option_list:
+            if data_type in FILTER_OPTION_LIST:
                 return True
         return False
 
