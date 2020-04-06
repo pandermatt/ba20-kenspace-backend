@@ -31,7 +31,7 @@ class MovieDbHandler(CsvDataHandler):
 
 class CustomCSV(CsvDataHandler):
     def __init__(self, settings):
-        CsvDataHandler.__init__(self, 'Custom', os.path.join('custom', settings['filename']))
+        CsvDataHandler.__init__(self, 'Custom', os.path.join('custom', f"{settings['filename']}.csv"))
         self.SHUFFLE_DATA = False
 
         self.settings = settings
