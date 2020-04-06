@@ -29,6 +29,9 @@ class Config:
     def custom_input_data_dir(self):
         return get_or_create(join(self.input_data_dir(), 'custom'))
 
+    def zip_input_data_dir(self, uuid):
+        return get_or_create(join(self.custom_input_data_dir(), f'zip_content-{uuid}'))
+
     def input_data_file(self, file_name):
         return join(self.input_data_dir(), file_name)
 
