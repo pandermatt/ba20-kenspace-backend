@@ -25,8 +25,18 @@ class MovieDbHandler(CsvDataHandler):
         return self.df['original_title'].tolist()
 
     def meta_info(self):
-        return [{"content": content, "image": 'https://image.tmdb.org/t/p/w185' + image} for content, image in
-                zip(self.df['overview'].tolist(), self.df['poster_path'].tolist())]
+        contents = self.df['overview'].tolist()
+        images = self.df['poster_path'].tolist()
+        ratings = self.df['vote_average'].tolist()
+        release_dates = self.df['release_date'].tolist()
+        image_prefix = 'https://image.tmdb.org/t/p/w185'
+
+        return [{
+            "content": content,
+            "image": f'{image_prefix}{image}',
+            "rating": round(rating / 2),
+            "release_date": release_date.split("-")[0]
+        } for content, image, rating, release_date in zip(contents, images, ratings, release_dates)]
 
 
 class CustomCSV(CsvDataHandler):
