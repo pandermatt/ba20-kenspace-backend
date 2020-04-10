@@ -52,7 +52,7 @@ class NltkTextCleaner:
         tokens = [t for t in tokens if
                   t not in nltk.corpus.stopwords.words(self.language) and t.isalpha()]
         tokens = [lemmatizer.lemmatize(t, self.wordnet_pos(t)) for t in tokens]
-        return tokens
+        return tokens + list(map(' '.join, nltk.bigrams(tokens)))
 
     def wordnet_pos(self, word):
         tag = nltk.pos_tag([word])[0][1][0].upper()
