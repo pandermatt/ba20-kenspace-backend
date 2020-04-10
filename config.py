@@ -23,8 +23,14 @@ class Config:
     def __data_dir(self):
         return get_or_create(abspath(join(self.__root_dir, 'data')))
 
+    def sub_data_dir(self, folder):
+        return get_or_create(join(self.__data_dir(), folder))
+
     def input_data_dir(self):
-        return get_or_create(join(self.__data_dir(), 'input'))
+        return self.sub_data_dir('input')
+
+    def input_data_file(self, file_name):
+        return join(self.input_data_dir(), file_name)
 
     def custom_input_data_dir(self):
         return get_or_create(join(self.input_data_dir(), 'custom'))
@@ -32,17 +38,11 @@ class Config:
     def zip_input_data_dir(self, uuid):
         return get_or_create(join(self.custom_input_data_dir(), f'zip_content-{uuid}'))
 
-    def input_data_file(self, file_name):
-        return join(self.input_data_dir(), file_name)
-
     def custom_input_file(self, file_name):
         return join(self.custom_input_data_dir(), file_name)
 
-    def model_data_dir(self):
-        return get_or_create(join(self.__data_dir(), 'model'))
-
-    def model_data_file(self, file_name):
-        return join(self.model_data_dir(), file_name)
+    def model_data_file(self, file_name, folder='model'):
+        return join(self.sub_data_dir(folder), file_name)
 
     def get_env(self, var):
         return self.__get_var(var)
