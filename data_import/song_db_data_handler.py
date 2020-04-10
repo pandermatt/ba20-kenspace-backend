@@ -19,9 +19,13 @@ class SongDbDataHandler(DataHandler):
                 + self.df['Song'].str.capitalize()
                 + '" - '
                 + self.df['Artist'].str.capitalize()
-                + ' ('
-                + self.df['Year'].astype(str)
-                + ')').tolist()
+                ).tolist()
 
     def meta_info(self):
-        return [{"content": content} for content in self.df['Lyrics'].tolist()]
+        contents = self.df['Lyrics'].tolist()
+        release_dates = self.df['Year'].tolist()
+
+        return [{
+            "content": content,
+            "release_date": release_date
+        } for content, release_date in zip(contents, release_dates)]
