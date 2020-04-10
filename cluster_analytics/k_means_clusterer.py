@@ -11,6 +11,7 @@ def identity_func(stopwords):
         if stopwords and token in stopwords:
             return [token]
         return token
+
     return func
 
 
