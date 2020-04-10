@@ -29,3 +29,4 @@ feedback.csv
 evaluation/*.png
 evaluation/*.csv
 evaluation/*.pdf
+used_stopwords.csv
