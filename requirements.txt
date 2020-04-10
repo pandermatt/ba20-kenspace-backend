@@ -1,3 +1,4 @@
+textract
 iso639
 langdetect
 faker
