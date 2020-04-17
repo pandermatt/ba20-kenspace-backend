@@ -31,6 +31,50 @@ cp application.example.yml application.yml
 
 Fill in all your keys
 
+
+## REST API
+
+- `/upload/`: Upload your file to analyse
+    - Method: `POST`
+    - Params: `uploadType`: `csv`, `txt`, `whatsapp` or `zip`
+    - Files: `file` with `FILE_CONTENT`
+    - Headers: `Authorization: Bearer`
+    - Returns: Data insight and `filename` of the Model. This `filename` must be included in the Cluster Settings.
+
+- `/queries/`: Generate your Queries
+    - Method: `GET`
+    - Params: `uuid`: Model ID, `deletedWords`: Array of Deleted- / Stop words, `settings`
+    - Headers: `Authorization: Bearer`
+    - Returns: queries as JSON
+
+- `/auth/`: Generate your Queries
+    - Method: `GET`
+    - Headers: `Authorization: Bearer`
+    - Returns: `successful` if key is correct
+
+- `/feedback/`: Submit feedback to your data
+    - Method: `POST`
+    - Params: 
+        - `uuid`
+        - `isHelpful`
+        - `movieTitle`
+        - `similarClusterActive`
+        - `search`
+        - `facet`
+        - `delete`
+        - `resultCount`
+    - Headers: `Authorization: Bearer`
+    - Returns: queries as JSON
+    
+- Settings Type
+    - `display`: Title Column
+    - `content`: Content Column
+    - `filename`: Filename (response from upload)
+    - `language`: Language to Analyse
+    - `techniques`: `nltk` or `spacy`
+    - `clusterSize`: `large`, `medium` or `small`
+    - `itemToAnalyse`: `all` (display and content) or `content`
+    
 ## Docker
 
 Use the `Makefile`:
