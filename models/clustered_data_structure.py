@@ -1,6 +1,3 @@
-import json
-
-
 class RestDisplayStructure:
     __slots__ = ['text', 'content', 'terms', 'cluster_id', 'meta_info']
 
