@@ -16,7 +16,12 @@ KenSpace: Explorative und komplexe Suchen auf unstrukturierte Dokumente
 git clone git@github.com:pandermatt/ba20-kenspace-backend.git
 cd ba20-kenspace-backend
 pip install -r requirements.txt
+
+python -m spacy download en_core_web_sm
+python -m spacy download de_core_news_sm
 ```
+
+For an easy installation, go to the Docker section.
 
 ### Run
 ```bash
