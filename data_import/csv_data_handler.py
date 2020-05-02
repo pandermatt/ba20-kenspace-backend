@@ -15,6 +15,11 @@ class CsvDataHandler(DataHandler):
 
 
 class MovieDbHandler(CsvDataHandler):
+    """
+    Dataset Source:
+    https://www.kaggle.com/rounakbanik/the-movies-dataset#movies_metadata.csv
+    """
+
     def __init__(self):
         CsvDataHandler.__init__(self, 'MovieDB', 'movies_metadata.csv')
         self.PRE_LOAD_UUID = "MovieDB-Demo"

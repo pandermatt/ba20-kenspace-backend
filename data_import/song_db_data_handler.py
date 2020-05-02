@@ -5,6 +5,11 @@ from data_import.data_handler import DataHandler
 
 
 class SongDbDataHandler(DataHandler):
+    """
+    Dataset Source:
+    https://www.kaggle.com/rakannimer/billboard-lyrics#billboard_lyrics_1964-2015.csv
+    """
+
     def __init__(self):
         DataHandler.__init__(self, 'Song DB')
         path = config.input_data_file('billboard_lyrics_1964-2015.csv')
