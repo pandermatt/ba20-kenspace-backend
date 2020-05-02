@@ -40,6 +40,37 @@ class MovieDbHandler(CsvDataHandler):
         } for content, image, rating, release_date in zip(contents, images, ratings, release_dates)]
 
 
+class AirBnBHandler(CsvDataHandler):
+    """
+    Dataset Source:
+    https://www.kaggle.com/brittabettendorf/berlin-airbnb-data#listings_summary.csv
+    """
+
+    def __init__(self):
+        CsvDataHandler.__init__(self, 'AirBnBDB', 'listings_summary.csv')
+        self.PRE_LOAD_UUID = "AirBnB-Demo"
+        self.df = self.df[:1_000]
+        self.saved_item_to_cluster = [i + j + k + l for i, j, k, l in zip(self.clean_up_df_text('description'),
+                                                                          self.clean_up_df_text('space'),
+                                                                          self.clean_up_df_text(
+                                                                              'neighborhood_overview'),
+                                                                          self.clean_up_df_text('transit'))]
+
+    def display_labels(self):
+        return self.df['name'].tolist()
+
+    def meta_info(self):
+        contents = self.df['summary'].tolist()
+        images = self.df['picture_url'].tolist()
+        release_dates = self.df['listing_url'].tolist()
+
+        return [{
+            "content": content,
+            "image": image,
+            "release_date": release_date
+        } for content, image, release_date in zip(contents, images, release_dates)]
+
+
 class CustomCSV(CsvDataHandler):
     def __init__(self, settings):
         CsvDataHandler.__init__(self, 'Custom', os.path.join('custom', f"{settings['filename']}.csv"))
