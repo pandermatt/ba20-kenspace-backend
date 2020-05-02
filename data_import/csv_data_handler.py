@@ -67,13 +67,22 @@ class AirBnBHandler(CsvDataHandler):
     def meta_info(self):
         contents = self.df['summary'].tolist()
         images = self.df['picture_url'].tolist()
-        release_dates = self.df['listing_url'].tolist()
+        release_dates = self.df['price'].tolist()
+        ratings = self.df['review_scores_rating'].tolist()
 
         return [{
             "content": content,
             "image": image,
+            "rating": self.round_int(rating),
             "release_date": release_date
-        } for content, image, release_date in zip(contents, images, release_dates)]
+        } for content, image, rating, release_date in zip(contents, images, ratings, release_dates)]
+
+    @staticmethod
+    def round_int(value):
+        try:
+            return round(int(value) / 20)
+        except ValueError:
+            return 0
 
 
 class CustomCSV(CsvDataHandler):
