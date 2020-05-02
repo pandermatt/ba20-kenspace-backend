@@ -11,7 +11,7 @@ from util.logger import log
 
 def clean_up_text(df, column_name, language, clean_up_method):
     log.info('Starting Text Cleanup')
-    should_use_multiprocessing = config.get_env("PROCESSES_NUMBER") < 2
+    should_use_single_processing = config.get_env("PROCESSES_NUMBER") < 2
     log.info(f'Using {clean_up_method}. Language={language}')
 
     if clean_up_method == "nltk":
@@ -25,7 +25,7 @@ def clean_up_text(df, column_name, language, clean_up_method):
         log.warn(f'{clean_up_method} not found')
         return
 
-    if should_use_multiprocessing:
+    if should_use_single_processing:
         return df[column_name].apply(lambda x: class_to_use.tokenizer(x)).tolist()
     start_time = time.time()
     with mp.Pool() as pool:
@@ -44,6 +44,7 @@ class NltkTextCleaner:
         nltk.download('wordnet', quiet=True)
         nltk.download('stopwords', quiet=True)
         self.language = language
+        self.bigrams = False
 
     def tokenizer(self, text):
         tokens = nltk.word_tokenize(text.lower())
@@ -52,7 +53,9 @@ class NltkTextCleaner:
         tokens = [t for t in tokens if
                   t not in nltk.corpus.stopwords.words(self.language) and t.isalpha()]
         tokens = [lemmatizer.lemmatize(t, self.wordnet_pos(t)) for t in tokens]
-        return tokens + list(map(' '.join, nltk.bigrams(tokens)))
+        if self.bigrams:
+            return tokens + list(map(' '.join, nltk.bigrams(tokens)))
+        return tokens
 
     def wordnet_pos(self, word):
         tag = nltk.pos_tag([word])[0][1][0].upper()
