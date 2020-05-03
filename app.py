@@ -79,7 +79,7 @@ class AuthHandler(Resource):
 class FeedbackHandler(Resource):
     @token_auth.login_required
     def post(self):
-        """Submit feedback"""
+        """Submit feedback to improve your system"""
         save_feedback(
             request.headers.get('Authorization'),
             request.args.get('uuid'),
@@ -105,6 +105,7 @@ upload_parser.add_argument('file', location='files',
 class Upload(Resource):
     @token_auth.login_required
     def post(self):
+        """Upload your data to analyse"""
         response = handle_file_upload(request.files['file'], request.form.get('uploadType'))
         return response, 201
 

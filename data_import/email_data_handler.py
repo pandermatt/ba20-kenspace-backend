@@ -9,6 +9,11 @@ from util.logger import log
 
 
 class EmailDataHandler(DataHandler):
+    """
+    Dataset Source:
+    https://www.cs.cmu.edu/~enron/
+    """
+
     __columns = ['From', 'To', 'Cc', 'Subject']
     __last_line = "X-FileName"
 

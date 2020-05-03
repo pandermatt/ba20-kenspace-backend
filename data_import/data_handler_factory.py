@@ -19,6 +19,7 @@ def initialize_data(selected_data: str, settings) -> DataHandler:
     data_handler = {
         'Email': email_data_handler.EmailDataHandler,
         'MovieDb': csv_data_handler.MovieDbHandler,
+        'AirBnBDb': csv_data_handler.AirBnBHandler,
         'SongDb': song_db_data_handler.SongDbDataHandler
     }
 
