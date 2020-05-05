@@ -2,6 +2,14 @@ from cluster_analytics.k_means_clusterer import KMeansCluster
 from cluster_analytics.lda_clusterer import LDACluster
 
 
+class ClusterIO:
+    def __init__(self, uuid: str, k_means: KMeansCluster, lda: LDACluster, topics):
+        self.uuid = uuid
+        self.k_means = k_means
+        self.lda = lda
+        self.topics = topics
+
+
 class RestDisplayStructure:
     __slots__ = ['text', 'content', 'terms', 'cluster_id', 'meta_info']
 

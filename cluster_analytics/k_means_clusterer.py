@@ -1,5 +1,3 @@
-import uuid
-
 from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -9,7 +7,6 @@ from config import config
 
 class KMeansCluster:
     def __init__(self, documents, n_clusters, top_terms_per_cluster, max_iteration):
-        self.uuid = str(uuid.uuid4())
         self.documents = documents
         self.n_clusters = n_clusters
         self.top_terms_per_cluster = top_terms_per_cluster
