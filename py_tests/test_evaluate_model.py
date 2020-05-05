@@ -1,7 +1,7 @@
 import pytest
 
 from evaluation.evaluate_model import calculate_purity, calculate_entropy
-from models.clustered_data_structure import RestDisplayStructure
+from cluster_analytics.clustered_data_structure import RestDisplayStructure
 
 cluster_id_genres_mapping = {
     121: {'Animation': 1, 'Comedy': 1, 'Family': 1},
