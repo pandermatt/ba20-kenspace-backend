@@ -1,19 +1,22 @@
 import itertools
 import json
 import random
+import uuid
 from collections import Counter
 from typing import List, Tuple
 
+from cluster_analytics.clustered_data_structure import RestDisplayStructure, ClusterIO
 from cluster_analytics.k_means_clusterer import KMeansCluster
+from cluster_analytics.kensemble_clustering import KenSpaceLearning
+from cluster_analytics.lda_clusterer import LDACluster
 from data_import.data_handler_factory import initialize_data
 from file_io import storage_io
 from file_io.stopwords_io import save_stopwords
-from models.clustered_data_structure import RestDisplayStructure
 from util.logger import log
 from util.timed_cache import timed_cache
 
 
-def generate_cluster(selected_data, settings) -> Tuple[str, List[RestDisplayStructure]]:
+def generate_cluster(selected_data, settings) -> Tuple[str, List, List]:
     data_handler = initialize_data(selected_data, settings)
 
     pre_load_uuid = data_handler.PRE_LOAD_UUID
@@ -25,36 +28,50 @@ def generate_cluster(selected_data, settings) -> Tuple[str, List[RestDisplayStru
 
 
 def generate_k_means(data_handler, selected_data, max_iteration=10000, n_clusters=None):
-    log.info(f'Generating KMeans with {n_clusters or data_handler.calculate_n_clusters()} Clusters')
-    k_cluster = KMeansCluster(data_handler.item_to_cluster(),
-                              n_clusters or data_handler.calculate_n_clusters(),
-                              data_handler.TOP_TERMS_PER_CLUSTER,
-                              max_iteration)
+    documents, top_terms = data_handler.item_to_cluster(), data_handler.TOP_TERMS_PER_CLUSTER
+    TOP_TERMS_PREVIEW = 4
+
+    log.info(f'Generating KMeansCluster with {n_clusters or data_handler.calculate_n_clusters()} Clusters')
+    k_cluster = KMeansCluster(documents, n_clusters or data_handler.calculate_n_clusters(), top_terms, max_iteration)
+
+    lda_components = round(data_handler.calculate_n_clusters() / 2)
+    log.info(f'Generating LDACluster with {lda_components} Components')
+    lda_cluster = LDACluster(documents, lda_components, TOP_TERMS_PREVIEW)
+
+    log.info(f'Generating KenSpaceLearning with {n_clusters or data_handler.calculate_n_clusters()} Clusters')
+    topic_labels = KenSpaceLearning(k_cluster.get_clusters(), lda_cluster.topics()).topics_linked_to_clusters()
+
+    cluster_uuid = str(uuid.uuid4())
 
     if data_handler.PRE_LOAD_UUID:
-        k_cluster.uuid = data_handler.PRE_LOAD_UUID
+        cluster_uuid = data_handler.PRE_LOAD_UUID
 
-    storage_io.save_model_to_disk(k_cluster, selected_data)
+    cluster_io = ClusterIO(cluster_uuid, k_cluster, lda_cluster, topic_labels)
 
-    return k_cluster.uuid, prepare_clustered_data_structure(data_handler, k_cluster)
+    storage_io.save_model_to_disk(cluster_io, selected_data)
+
+    return cluster_uuid, prepare_clustered_data_structure(data_handler, k_cluster), topic_labels
 
 
 @timed_cache(minutes=100)
-def load_cluster(uuid: str, stopwords: str, selected_data: str, settings) -> Tuple[str, List[RestDisplayStructure]]:
+def load_cluster(uuid: str, stopwords: str, selected_data: str, settings) -> Tuple[str, List, List]:
     data_handler = initialize_data(selected_data, settings)
 
-    k_cluster = storage_io.load_model_from_disk(uuid, selected_data)
+    cluster_io = storage_io.load_model_from_disk(uuid, selected_data)
 
     if stopwords:
         save_stopwords(uuid, selected_data, stopwords)
         log.info(f'KMeans with Stopwords {json.loads(stopwords)}')
-        k_cluster.calculate(json.loads(stopwords))
+        cluster_io.k_means.calculate(json.loads(stopwords))
+        cluster_io.topics = KenSpaceLearning(cluster_io.k_means.get_clusters(),
+                                             cluster_io.lda.topics()
+                                             ).topics_linked_to_clusters()
 
-    return uuid, prepare_clustered_data_structure(data_handler, k_cluster)
+    return uuid, prepare_clustered_data_structure(data_handler, cluster_io.k_means), cluster_io.topics
 
 
 def prepare_clustered_data_structure(data_handler, k_cluster) -> List[RestDisplayStructure]:
-    log.info(f'Generating Prediction (UUID: {k_cluster.uuid})')
+    log.info(f'Generating Prediction')
     result = [RestDisplayStructure(label, meta_info, term, cluster_id)
               for label, meta_info, term, cluster_id in
               zip(data_handler.display_labels(),

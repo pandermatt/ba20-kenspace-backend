@@ -3,6 +3,7 @@ import os
 import dill as dill
 
 from api import errors
+from cluster_analytics.clustered_data_structure import ClusterIO
 from cluster_analytics.k_means_clusterer import KMeansCluster
 from config import config
 from data_import.data_handler import DataHandler
@@ -30,13 +31,13 @@ def is_model_present(uuid, data):
     return os.path.isfile(__get_filename(data, uuid))
 
 
-def save_model_to_disk(model: KMeansCluster, data: str):
+def save_model_to_disk(model: ClusterIO, data: str):
     if not config.SAVE_TO_FILE:
         return
     __dump_file(model, __get_filename(data, model.uuid))
 
 
-def load_model_from_disk(uuid: str, data: str) -> KMeansCluster:
+def load_model_from_disk(uuid: str, data: str) -> ClusterIO:
     return __load_file(__get_filename(data, uuid))
 
 

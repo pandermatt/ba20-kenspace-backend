@@ -1,23 +1,12 @@
-import uuid
-
 from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+from cluster_analytics.cluster_helper import identity_func
 from config import config
-
-
-def identity_func(stopwords):
-    def func(token):
-        if stopwords and token in stopwords:
-            return [token]
-        return token
-
-    return func
 
 
 class KMeansCluster:
     def __init__(self, documents, n_clusters, top_terms_per_cluster, max_iteration):
-        self.uuid = str(uuid.uuid4())
         self.documents = documents
         self.n_clusters = n_clusters
         self.top_terms_per_cluster = top_terms_per_cluster
@@ -34,7 +23,9 @@ class KMeansCluster:
                                           lowercase=False)
         self.tfidf_matrix = self.vectorizer.fit_transform(self.documents)
 
-        self.model = KMeans(n_clusters=self.n_clusters, init='k-means++', max_iter=self.max_iteration,
+        self.model = KMeans(n_clusters=self.n_clusters,
+                            init='k-means++',
+                            max_iter=self.max_iteration,
                             n_init=1,
                             n_jobs=config.get_env("PROCESSES_NUMBER"))
         self.model.fit(self.tfidf_matrix)
@@ -72,6 +63,17 @@ class KMeansCluster:
             terms_list.append(doc_terms)
 
         return terms_list
+
+    def get_clusters(self):
+        order_centroids = self.model.cluster_centers_.argsort()[:, ::-1]
+        terms = self.vectorizer.get_feature_names()
+        clusters = []
+        for i in range(self.model.n_clusters):
+            entry = []
+            for ind in order_centroids[i, :self.top_terms_per_cluster]:
+                entry.append(terms[ind])
+            clusters.append(entry)
+        return clusters
 
     def get_cluster_id(self):
         return self.model.labels_
