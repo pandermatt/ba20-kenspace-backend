@@ -2,6 +2,7 @@ import os
 
 import pandas as pd
 
+from api.errors import error_response
 from config import config
 from data_import.data_handler import DataHandler, calculate_n_clusters_by_category
 
@@ -48,13 +49,22 @@ class MovieDbHandler(CsvDataHandler):
 class AirBnBHandler(CsvDataHandler):
     """
     Dataset Source:
-    https://www.kaggle.com/brittabettendorf/berlin-airbnb-data#listings_summary.csv
+    http://insideairbnb.com/get-the-data.html
     """
 
-    def __init__(self):
-        CsvDataHandler.__init__(self, 'AirBnBDB', 'listings_summary.csv')
-        self.PRE_LOAD_UUID = "AirBnB-Demo"
-        self.df = self.df[:1_000]
+    def __init__(self, settings):
+        data_source = settings['city']
+        if data_source not in ['amsterdam', 'athens', 'barcelona', 'berlin', 'bologna',
+                               'dublin', 'geneva', 'hongkong', 'westernaustralia']:
+            error_response(f'{data_source} does not exist')
+
+        CsvDataHandler.__init__(self, f'AirBnBDB{data_source}', f'{data_source}_listings_details.csv')
+
+        self.HAS_MULTIPLE_DATA_SOURCES = True
+        self.DATA_SOURCE = data_source
+        self.PRE_LOAD_UUID = f'AirBnB-Demo-{data_source}'
+
+        self.df = self.df[:4_000]
         self.saved_item_to_cluster = [i + j + k + l for i, j, k, l in zip(self.clean_up_df_text('description'),
                                                                           self.clean_up_df_text('space'),
                                                                           self.clean_up_df_text(
@@ -77,6 +87,9 @@ class AirBnBHandler(CsvDataHandler):
             "release_date": release_date
         } for content, image, rating, release_date in zip(contents, images, ratings, release_dates)]
 
+    def calculate_n_clusters(self):
+        return calculate_n_clusters_by_category(self.df.shape[0])['small'][1]
+
     @staticmethod
     def round_int(value):
         try:
@@ -92,6 +105,7 @@ class CustomCSV(CsvDataHandler):
 
         self.settings = settings
         self.cluster_size = settings['clusterSize']
+        self.df = self.df[:1_000]
 
         if settings['itemToAnalyse'] == 'all':
             self.saved_item_to_cluster = [i + j for i, j in

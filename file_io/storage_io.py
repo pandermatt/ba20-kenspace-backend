@@ -4,7 +4,6 @@ import dill as dill
 
 from api import errors
 from cluster_analytics.clustered_data_structure import ClusterIO
-from cluster_analytics.k_means_clusterer import KMeansCluster
 from config import config
 from data_import.data_handler import DataHandler
 from util.logger import log
