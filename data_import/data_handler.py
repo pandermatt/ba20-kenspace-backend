@@ -5,6 +5,10 @@ from util.text_clean_up import clean_up_text
 
 class DataHandler:
     TOP_TERMS_PER_CLUSTER = config.get_env("DEFAULT_TOP_TERMS_PER_CLUSTER")
+
+    HAS_MULTIPLE_DATA_SOURCES = False
+    DATA_SOURCE = None
+
     SHUFFLE_DATA = True
     PRE_LOAD_UUID = None
 

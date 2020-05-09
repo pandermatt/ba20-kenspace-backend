@@ -16,31 +16,47 @@ def initialize_data(selected_data: str, settings) -> DataHandler:
     Specifies which DataHandler to use
     """
 
+    if settings:
+        settings = json.loads(settings)
+
+        if selected_data == 'custom':
+            return initialize_custom_data(csv_data_handler.CustomCSV,
+                                          settings,
+                                          settings['identifier'])
+
+        if selected_data == 'AirBnBDb':
+            return initialize_custom_data(csv_data_handler.AirBnBHandler,
+                                          settings,
+                                          f"{selected_data}-{settings['city']}")
+
+    return initialize_normal_data(selected_data)
+
+
+def initialize_normal_data(selected_data):
     data_handler = {
         'Email': email_data_handler.EmailDataHandler,
         'MovieDb': csv_data_handler.MovieDbHandler,
-        'AirBnBDb': csv_data_handler.AirBnBHandler,
         'SongDb': song_db_data_handler.SongDbDataHandler
     }
-
-    if settings and selected_data == 'custom':
-        settings = json.loads(settings)
-        if exists(config.model_data_file(f"data-{settings['filename']}.sav")):
-            return storage_io.load_data_from_disk(selected_data)
-
-        custom_csv = csv_data_handler.CustomCSV(settings)
-        storage_io.save_data_to_disk(custom_csv, settings['filename'])
-
-        return custom_csv
 
     if exists(config.model_data_file(f'data-{selected_data}.sav')):
         return storage_io.load_data_from_disk(selected_data)
 
     if selected_data not in data_handler.keys():
         log.warn(f'{selected_data} not found')
-        return errors.unauthorized_response()
+        errors.unauthorized_response()
 
     data_handler_factory = data_handler[selected_data]()
     storage_io.save_data_to_disk(data_handler_factory, selected_data)
 
     return data_handler_factory
+
+
+def initialize_custom_data(handler, settings, identifier):
+    if exists(config.model_data_file(f"data-{identifier}.sav")):
+        return storage_io.load_data_from_disk(identifier)
+
+    custom_data = handler(settings)
+    storage_io.save_data_to_disk(custom_data, identifier)
+
+    return custom_data

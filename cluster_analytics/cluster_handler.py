@@ -20,9 +20,13 @@ def generate_cluster(selected_data, settings) -> Tuple[str, List, List]:
     data_handler = initialize_data(selected_data, settings)
 
     pre_load_uuid = data_handler.PRE_LOAD_UUID
+
+    if data_handler.HAS_MULTIPLE_DATA_SOURCES:
+        selected_data = data_handler.DATA_SOURCE
+
     if pre_load_uuid and storage_io.is_model_present(pre_load_uuid, selected_data):
         log.info(f'Preload model: {pre_load_uuid}')
-        return load_cluster(data_handler.PRE_LOAD_UUID, "", selected_data, settings)
+        return load_cluster(data_handler.PRE_LOAD_UUID, "", selected_data, settings, data_handler=data_handler)
 
     return generate_k_means(data_handler, selected_data)
 
@@ -34,7 +38,10 @@ def generate_k_means(data_handler, selected_data, max_iteration=10000, n_cluster
     log.info(f'Generating KMeansCluster with {n_clusters or data_handler.calculate_n_clusters()} Clusters')
     k_cluster = KMeansCluster(documents, n_clusters or data_handler.calculate_n_clusters(), top_terms, max_iteration)
 
-    lda_components = round(data_handler.calculate_n_clusters() / 2)
+    lda_components = data_handler.calculate_n_clusters()
+    if lda_components > 500:
+        lda_components = 500
+
     log.info(f'Generating LDACluster with {lda_components} Components')
     lda_cluster = LDACluster(documents, lda_components, TOP_TERMS_PREVIEW)
 
@@ -54,8 +61,12 @@ def generate_k_means(data_handler, selected_data, max_iteration=10000, n_cluster
 
 
 @timed_cache(minutes=100)
-def load_cluster(uuid: str, stopwords: str, selected_data: str, settings) -> Tuple[str, List, List]:
-    data_handler = initialize_data(selected_data, settings)
+def load_cluster(uuid: str, stopwords: str, selected_data: str, settings, data_handler=None) -> Tuple[str, List, List]:
+    if not data_handler:
+        data_handler = initialize_data(selected_data, settings)
+
+    if data_handler.HAS_MULTIPLE_DATA_SOURCES:
+        selected_data = data_handler.DATA_SOURCE
 
     cluster_io = storage_io.load_model_from_disk(uuid, selected_data)
 
