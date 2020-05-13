@@ -79,13 +79,15 @@ class AirBnBHandler(CsvDataHandler):
         images = self.df['picture_url'].tolist()
         release_dates = self.df['price'].tolist()
         ratings = self.df['review_scores_rating'].tolist()
+        urls = self.df['listing_url'].tolist()
 
         return [{
             "content": content,
             "image": image,
             "rating": self.round_int(rating),
-            "release_date": release_date
-        } for content, image, rating, release_date in zip(contents, images, ratings, release_dates)]
+            "release_date": release_date,
+            "data_url": url
+        } for content, image, rating, release_date, url in zip(contents, images, ratings, release_dates, urls)]
 
     def calculate_n_clusters(self):
         return calculate_n_clusters_by_category(self.df.shape[0])['small'][1]
