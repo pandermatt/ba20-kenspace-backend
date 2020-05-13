@@ -22,7 +22,7 @@ def initialize_data(selected_data: str, settings) -> DataHandler:
         if selected_data == 'custom':
             return initialize_custom_data(csv_data_handler.CustomCSV,
                                           settings,
-                                          settings['identifier'])
+                                          settings['filename'])
 
         if selected_data == 'AirBnBDb':
             return initialize_custom_data(csv_data_handler.AirBnBHandler,
