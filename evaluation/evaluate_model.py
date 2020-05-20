@@ -68,7 +68,7 @@ def calculate_entropy(cluster_id_genres_mapping, data, movie_title_genres_mappin
 
 
 def evaluate_model(data, max_iterations=100):
-    _, data = generate_k_means(data, 'Test Data Set', max_iterations)
+    _, data, _ = generate_k_means(data, 'Test Data Set', max_iterations)
 
     path = config.input_data_file('movies_metadata.csv')
     df = pd.read_csv(path)
@@ -95,7 +95,7 @@ def evaluate_model(data, max_iterations=100):
                     m[genre] = 1
             else:
                 cluster_id_genres_mapping[id_as_int] = {genre: 1}
-    # print_cluster_probability(cluster_id_genres_mapping)
+    print_cluster_probability(cluster_id_genres_mapping)
 
     purity = calculate_purity(cluster_id_genres_mapping, data, movie_title_genres_mapping)
     print(f"----> Purity {purity * 100}")
@@ -168,7 +168,7 @@ def calculate_precision_and_overall(cluster_id_genres_mapping, data, movie_title
 class TestDbHandler(CsvDataHandler):
     def __init__(self, clean_up_method='nltk'):
         CsvDataHandler.__init__(self, 'MovieDB', 'movies_metadata.csv')
-        self.df = self.df.sample(4000)
+        self.df = self.df.sample(5_000)
         self.n_clusters = None
         self.saved_item_to_cluster = [i + j for i, j in
                                       zip(self.clean_up_df_text('overview', clean_up_method=clean_up_method),
@@ -195,39 +195,10 @@ if __name__ == '__main__':
 
     config.SAVE_TO_FILE = False
 
-    save_results(["min_df", "Purity", "Entropy", "Precision", "Recall", "F-Score"])
-
-    # count = 5
-    # for j in range(100):
-    #     a = np.zeros([count, 6])
-    #     for i in range(count):
-    #         handler.TOP_TERMS_PER_CLUSTER = ((j + 1) * 5)
-    #         a[i, :] = [(j + 1) * 5] + evaluate_model(handler)
-    #     save_results(np.mean(a, axis=0))
-
-    # count = 5
-    # handler.TOP_TERMS_PER_CLUSTER = 50
-    # for j in range(50):
-    #     a = np.zeros([count, 6])
-    #     for i in range(count):
-    #         handler.n_clusters = ((j + 1) * 20)
-    #         a[i, :] = [(j + 1) * 20] + evaluate_model(handler)
-    #     save_results(np.mean(a, axis=0))
+    save_results(["N", "Purity", "Entropy", "Precision", "Recall", "F-Score"])
 
     handler = TestDbHandler()
     handler.TOP_TERMS_PER_CLUSTER = 15
     handler.n_clusters = 100
-    for i in range(10):
-        save_results([0.2] + evaluate_model(handler))
-
-    # for i in range(10):
-    #     handler = TestDbHandler(clean_up_method='spacy')
-    #     handler.TOP_TERMS_PER_CLUSTER = 20
-    #     handler.n_clusters = 400
-    #     save_results(['spaCy'] + evaluate_model(handler))
-
-    # save_results(["purity", "entropy", "overall_precision", "overall_recall", "F"])
-    #
-    # handler = TestDbHandler()
-    # for i in range(50):
-    #     save_results(evaluate_model(handler))
+    for i in range(5):
+        save_results(["5000"] + evaluate_model(handler))
