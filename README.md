@@ -112,4 +112,4 @@ docker exec -it <docker-container> bash
 # Contributors
 ![](https://avatars2.githubusercontent.com/u/20790833?s=20) Pascal Andermatt
 
-![]() Stefan Brunner
+![](https://avatars0.githubusercontent.com/u/33753120?s=20) Stefan Brunner
