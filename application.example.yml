@@ -2,6 +2,8 @@ AUTH_KEY:
   - "<YOUR-KEY>:SongDb"
   - "<YOUR-KEY>:Imdb"
   - "<YOUR-KEY>:Email"
+  - "<YOUR-KEY>:custom"
+  - "<YOUR-KEY>:AirBnBDb"
 PROCESSES_NUMBER: <NUMBER>
 DEFAULT_TOP_TERMS_PER_CLUSTER: 25
 PRODUCTION: Y
