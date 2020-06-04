@@ -1,7 +1,7 @@
 AUTH_KEY:
-  - "<YOUR-KEY>:SongDb"
-  - "<YOUR-KEY>:Imdb"
   - "<YOUR-KEY>:Email"
+  - "<YOUR-KEY>:MovieDb"
+  - "<YOUR-KEY>:SongDb"
   - "<YOUR-KEY>:custom"
   - "<YOUR-KEY>:AirBnBDb"
 PROCESSES_NUMBER: <NUMBER>

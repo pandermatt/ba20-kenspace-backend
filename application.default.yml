@@ -1,7 +1,7 @@
 AUTH_KEY:
-  - "123:SongDb"
-  - "123:Imdb"
   - "123:Email"
+  - "123:MovieDb"
+  - "123:SongDb"
   - "123:custom"
   - "123:AirBnBDb"
 PROCESSES_NUMBER: 1
