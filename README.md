@@ -40,7 +40,7 @@ cp application.default.yml application.yml
 ### Data
 
 The Data must be copied from <https://github.com/pandermatt/ba20-kenspace-case-study-data> or downloaded by yourself.
-If you do not want to download standard data, you can use the upload.
+If you do not want to download the standard data, you can use the upload.
 
 **Warning ⚠️:** The first generation of data may take a while
 
