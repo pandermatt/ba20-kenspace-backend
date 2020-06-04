@@ -23,11 +23,6 @@ python -m spacy download de_core_news_sm
 
 For an easy installation, go to the Docker section.
 
-### Run
-```bash
-python app.py
-```
-
 #### Configuration
 
 ```bash
@@ -35,6 +30,12 @@ cp application.example.yml application.yml
 ```
 
 Fill in all your keys
+
+
+### Run
+```bash
+python app.py
+```
 
 
 ## REST API
