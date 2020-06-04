@@ -32,6 +32,12 @@ cp application.example.yml application.yml
 Fill in all your keys
 
 
+To load the default config
+
+```bash
+cp application.default.yml application.yml
+```
+
 ### Run
 ```bash
 python app.py
