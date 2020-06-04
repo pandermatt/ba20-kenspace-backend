@@ -44,11 +44,13 @@ If you do not want to download the standard data, you can use the upload.
 
 ### Run
 
-For an easy installation, go to the Docker section.
-
 ```bash
 python app.py
 ```
+
+or
+
+for an easy installation, go to the Docker section.
 
 
 ## REST API
