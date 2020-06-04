@@ -24,7 +24,7 @@ class EmailDataHandler(DataHandler):
         mail_to_analyze_path = os.path.join(mail_data_dir, mail_to_analyze)
 
         rows = []
-        for mail_file in glob.glob(os.path.join(mail_to_analyze_path, '*.')):
+        for mail_file in glob.glob(os.path.join(mail_to_analyze_path, '*.txt')):
             with open(mail_file) as fp:
                 row = [''] * len(self.__columns)
                 content_line = False
