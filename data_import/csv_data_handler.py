@@ -107,20 +107,20 @@ class CustomCSV(CsvDataHandler):
 
         self.settings = settings
         self.cluster_size = settings['clusterSize']
-        self.df = self.df[:1_000]
+        # self.df = self.df[:1_000]
 
         if settings['itemToAnalyse'] == 'all':
             self.saved_item_to_cluster = [i + j for i, j in
-                                          zip(self.clean_up_df_text(settings['display'],
-                                                                    language=settings['language'],
-                                                                    clean_up_method=settings['techniques']),
-                                              self.clean_up_df_text(settings['content'],
-                                                                    language=settings['language'],
-                                                                    clean_up_method=settings['techniques']))]
+                                          zip(self.clean_up_text_from_settings('display', settings),
+                                              self.clean_up_text_from_settings('content', settings))]
         else:
-            self.saved_item_to_cluster = self.clean_up_df_text(settings['content'],
-                                                               language=settings['language'],
-                                                               clean_up_method=settings['techniques'])
+            self.saved_item_to_cluster = self.clean_up_text_from_settings('content', settings)
+
+    def clean_up_text_from_settings(self, df_col, settings):
+        return self.clean_up_df_text(settings[df_col],
+                              language=settings['language'],
+                              clean_up_method=settings['techniques'],
+                              second_language=settings['secondLanguage'])
 
     def display_labels(self):
         return self.df[self.settings['display']].tolist()
