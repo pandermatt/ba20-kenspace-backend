@@ -9,12 +9,15 @@ from config import config
 from util.logger import log
 
 
-def clean_up_text(df, column_name, language, clean_up_method):
+def clean_up_text(df, column_name, language, clean_up_method, second_language):
     log.info('Starting Text Cleanup')
     should_use_single_processing = config.get_env("PROCESSES_NUMBER") < 2
     log.info(f'Using {clean_up_method}. Language={language}')
 
-    if clean_up_method == "nltk":
+    if second_language and second_language != 'none':
+        class_to_use = MultiLanguageNltkCleaner(language, second_language)
+        log.info(f'Using second language={second_language}')
+    elif clean_up_method == "nltk":
         class_to_use = NltkTextCleaner(language)
     elif clean_up_method == "spacy":
         if language not in ['english', 'german']:
@@ -51,7 +54,9 @@ class NltkTextCleaner:
         lemmatizer = nltk.WordNetLemmatizer()
 
         tokens = [t for t in tokens if
-                  t not in nltk.corpus.stopwords.words(self.language) and t.isalpha()]
+                  t not in nltk.corpus.stopwords.words(self.language)
+                  and t not in nltk.corpus.stopwords.words(self.language)
+                  and t.isalpha()]
         tokens = [lemmatizer.lemmatize(t, self.wordnet_pos(t)) for t in tokens]
         if self.bigrams:
             return tokens + list(map(' '.join, nltk.bigrams(tokens)))
@@ -65,6 +70,26 @@ class NltkTextCleaner:
                     "R": nltk.corpus.wordnet.ADV}
 
         return tag_dict.get(tag, nltk.wordnet.NOUN)
+
+
+class MultiLanguageNltkCleaner(NltkTextCleaner):
+    def __init__(self, language, second_language):
+        NltkTextCleaner.__init__(self, language)
+        log.info('Setup multi NLTK')
+        self.second_language = second_language
+
+    def tokenizer(self, text):
+        tokens = nltk.word_tokenize(text.lower())
+        lemmatizer = nltk.WordNetLemmatizer()
+
+        tokens = [t for t in tokens if
+                  t not in nltk.corpus.stopwords.words(self.language)
+                  and t not in nltk.corpus.stopwords.words(self.second_language)
+                  and t.isalpha()]
+        tokens = [lemmatizer.lemmatize(t, self.wordnet_pos(t)) for t in tokens]
+        if self.bigrams:
+            return tokens + list(map(' '.join, nltk.bigrams(tokens)))
+        return tokens
 
 
 class SpacyTextCleaner:
