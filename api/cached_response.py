@@ -40,7 +40,7 @@ def extract_data_from_auth_header(auth_header):
 
 def generate_queries(uuid, stopwords, auth_header, settings):
     selected_data = extract_data_from_auth_header(auth_header)
-    if uuid is "":
+    if uuid == "":
         uuid, result, topic = start_cluster_generation_thread(selected_data, settings)
     else:
         uuid, result, topic = cluster_handler.load_cluster(uuid, stopwords, selected_data, settings)
