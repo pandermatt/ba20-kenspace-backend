@@ -13,4 +13,4 @@ PyYAML
 scikit-learn
 spacy
 waitress
-werkzeug==0.16.1
+werkzeug==2.2.3
